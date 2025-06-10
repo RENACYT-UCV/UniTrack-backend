@@ -6,10 +6,17 @@ import { AuthModule } from './auth/auth.module';
 import { QrModule } from './qr/qr.module';
 import { HistorialModule } from './historial/historial.module';
 import { AdminModule } from './admin/admin.module';
+import { ReportsService } from './reports/reports.service';
+import { ReportsController } from './reports/reports.controller';
+import { ReportsModule } from './reports/reports.module';
+import { AlertasModule } from './alertas/alertas.module';
+import { VerificacionCodigoModule } from './verificacion-codigo/verificacion-codigo.module';
+import { VerificacionCodigoAdminService } from './verificacion-codigo-admin/verificacion-codigo-admin.service';
+import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verificacion-codigo-admin.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, QrModule, HistorialModule, AdminModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [UsersModule, AuthModule, QrModule, HistorialModule, AdminModule, ReportsModule, AlertasModule, VerificacionCodigoModule, VerificacionCodigoAdminModule],
+  controllers: [AppController, ReportsController],
+  providers: [AppService, ReportsService, VerificacionCodigoAdminService],
 })
 export class AppModule {}
