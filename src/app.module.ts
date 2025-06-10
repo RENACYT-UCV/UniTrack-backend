@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { envConfig } from '@config/env.config';
+import { typeOrmModule } from '@config/database.config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -14,6 +17,8 @@ import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verif
 
 @Module({
   imports: [
+    envConfig(),
+    typeOrmModule(),
     UsersModule,
     AuthModule,
     AdminModule,
