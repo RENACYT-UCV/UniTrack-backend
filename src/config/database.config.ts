@@ -4,7 +4,7 @@ import { TypeOrmModule, type TypeOrmModuleOptions } from '@nestjs/typeorm';
 const PATH_ENTITIES = path.join(
   __dirname,
   '..',
-  'users',
+  '**',
   'entities',
   '*.entity.{ts,js}',
 );
