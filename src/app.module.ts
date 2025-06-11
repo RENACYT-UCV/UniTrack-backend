@@ -7,8 +7,6 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
-import { ReportsService } from './reports/reports.service';
-import { ReportsController } from './reports/reports.controller';
 import { ReportsModule } from './reports/reports.module';
 import { AlertasModule } from './alertas/alertas.module';
 import { VerificacionCodigoModule } from './verificacion-codigo/verificacion-codigo.module';
@@ -27,7 +25,7 @@ import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verif
     VerificacionCodigoModule,
     VerificacionCodigoAdminModule,
   ],
-  controllers: [AppController, ReportsController],
-  providers: [AppService, ReportsService, VerificacionCodigoAdminService],
+  controllers: [AppController],
+  providers: [AppService, VerificacionCodigoAdminService],
 })
 export class AppModule {}
