@@ -4,27 +4,24 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Admin } from 'src/admin/entities/admin.entity';
+import { ReporteHistorial } from 'src/report-history/entity/reports-history.entity';
 
-@Entity('reportes')
+@Entity('reporte')
 export class Report {
   @PrimaryGeneratedColumn({ name: 'idReporte' })
   idReporte: number;
 
-  @ManyToOne(() => User, (user) => user.reportes)
-  @JoinColumn({ name: 'user_id', referencedColumnName: 'idUsuario' })
-  usuario: User;
+  @ManyToOne(() => Admin)
+  @JoinColumn({ name: 'idAdmin' })
+  admin: Admin;
 
   @Column({ type: 'date' })
   fecha: string;
 
-  @Column({ type: 'time' })
-  hora: string;
-
-  @Column({ length: 50, nullable: true })
-  modo?: string;
-
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  timestamp: Date;
+  @OneToMany(() => ReporteHistorial, (rh) => rh.reporte)
+  reportesHistorial: ReporteHistorial[];
 }

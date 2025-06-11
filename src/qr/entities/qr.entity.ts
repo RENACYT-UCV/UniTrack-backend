@@ -1,0 +1,24 @@
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { User } from '../../users/entities/user.entity';
+
+@Entity('qr')
+export class Report {
+  @PrimaryGeneratedColumn({ name: 'idHistorial' })
+  idQr: number;
+
+  @ManyToOne(() => User, (user) => user.historial)
+  @JoinColumn({ name: 'idUsuario', referencedColumnName: 'idUsuario' })
+  usuario: User;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  timestamp: Date;
+
+  @Column({ name: 'hash' })
+  hash: string;
+}

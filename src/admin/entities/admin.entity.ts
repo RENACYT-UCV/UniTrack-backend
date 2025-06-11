@@ -14,9 +14,6 @@ export class Admin {
   @Column({ length: 100, unique: true })
   correo: string;
 
-  @Column({ name: 'codigo_admin', length: 20, unique: true })
-  codigoAdmin: string;
-
   @Column({ length: 255 })
   contrasena: string;
 

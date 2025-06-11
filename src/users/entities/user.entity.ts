@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Report } from '../../reports/entities/reports.entity';
+import { History } from '../../history/entities/history.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('usuario')
@@ -67,10 +67,10 @@ export class User {
   sexo: string;
 
   @ApiProperty({
-    type: () => Report,
+    type: () => History,
     isArray: true,
     description: 'List of reports associated with the user',
   })
-  @OneToMany(() => Report, (report) => report.usuario)
-  reportes: Report[];
+  @OneToMany(() => History, (history) => history.usuario)
+  historial: History[];
 }
