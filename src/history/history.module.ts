@@ -4,8 +4,9 @@ import { HistoryService } from './history.service';
 import { HistoryController } from './history.controller';
 import { History } from './entities/history.entity';
 import { ReporteHistorial } from 'src/report-history/entity/reports-history.entity';
+import { User } from 'src/users/entities/user.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([History, ReporteHistorial])],
+  imports: [TypeOrmModule.forFeature([User, History, ReporteHistorial])],
   controllers: [HistoryController],
   providers: [HistoryService],
   exports: [HistoryService],
