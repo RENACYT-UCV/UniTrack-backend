@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Report } from '../../reports/entities/reports.entity';
 import { History } from '../../history/entities/history.entity';
 
@@ -15,7 +9,7 @@ export class ReporteHistorial {
 
   @ManyToOne(() => Report, (reporte) => reporte.reportesHistorial)
   @JoinColumn({ name: 'idReporte' })
-  reporte: History;
+  reporte: Report;
 
   @ManyToOne(() => History, (historial) => historial.reportesHistorial)
   @JoinColumn({ name: 'idHistorial' })

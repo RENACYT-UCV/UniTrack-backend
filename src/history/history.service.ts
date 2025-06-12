@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Report } from './entities/history.entity';
+import { History } from './entities/history.entity';
 
 @Injectable()
-export class ReportsService {
+export class HistoryService {
   constructor(
-    @InjectRepository(Report)
-    private readonly reportRepository: Repository<Report>,
+    @InjectRepository(History)
+    private readonly historyRepository: Repository<History>,
   ) {}
 
   async findByUserId(idUsuario: number) {
-    return this.reportRepository
+    return this.historyRepository
       .createQueryBuilder('r')
       .innerJoin('r.usuario', 'u')
       .select(['u.idUsuario', 'r.fecha', 'r.hora', 'r.modo'])

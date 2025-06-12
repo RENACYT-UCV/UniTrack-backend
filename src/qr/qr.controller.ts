@@ -1,9 +1,9 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ReportsService } from './qr.service';
+import { QrService } from './qr.service';
 
 @Controller('reports')
-export class ReportsController {
-  constructor(private readonly reportsService: ReportsService) {}
+export class QrController {
+  constructor(private readonly reportsService: QrService) {}
 
   @Get('historial/:idUsuario')
   async historial(@Param('idUsuario') idUsuario: string) {

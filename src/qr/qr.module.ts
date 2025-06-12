@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ReportsService } from './qr.service';
-import { ReportsController } from './qr.controller';
-import { Report } from './entities/qr.entity';
+import { QrService as QrService } from './qr.service';
+import { QrController } from './qr.controller';
+import { QR } from './entities/qr.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Report])],
-  controllers: [ReportsController],
-  providers: [ReportsService],
-  exports: [ReportsService],
+  imports: [TypeOrmModule.forFeature([QR])],
+  controllers: [QrController],
+  providers: [QrService],
+  exports: [QrService],
 })
-export class ReportsModule {}
+export class QrModule {}

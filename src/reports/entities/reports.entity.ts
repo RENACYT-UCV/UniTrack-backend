@@ -6,7 +6,6 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { ReporteHistorial } from 'src/report-history/entity/reports-history.entity';
 

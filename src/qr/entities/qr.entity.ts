@@ -8,8 +8,8 @@ import {
 import { User } from '../../users/entities/user.entity';
 
 @Entity('qr')
-export class Report {
-  @PrimaryGeneratedColumn({ name: 'idHistorial' })
+export class QR {
+  @PrimaryGeneratedColumn({ name: 'idQr' })
   idQr: number;
 
   @ManyToOne(() => User, (user) => user.historial)

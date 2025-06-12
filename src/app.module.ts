@@ -12,6 +12,9 @@ import { AlertasModule } from './alertas/alertas.module';
 import { VerificacionCodigoModule } from './verificacion-codigo/verificacion-codigo.module';
 import { VerificacionCodigoAdminService } from './verificacion-codigo-admin/verificacion-codigo-admin.service';
 import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verificacion-codigo-admin.module';
+import { ReportHistoryModule } from './report-history/report-history.module';
+import { HistoryModule } from './history/history.module';
+import { QrModule } from './qr/qr.module';
 
 @Module({
   imports: [
@@ -19,6 +22,9 @@ import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verif
     typeOrmModule(),
     UsersModule,
     AuthModule,
+    ReportHistoryModule,
+    HistoryModule,
+    QrModule,
     AdminModule,
     ReportsModule,
     AlertasModule,

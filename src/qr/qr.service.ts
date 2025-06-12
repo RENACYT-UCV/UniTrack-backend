@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Report } from './entities/qr.entity';
+import { QR } from './entities/qr.entity';
 
 @Injectable()
-export class ReportsService {
+export class QrService {
   constructor(
-    @InjectRepository(Report)
-    private readonly reportRepository: Repository<Report>,
+    @InjectRepository(QR)
+    private readonly reportRepository: Repository<QR>,
   ) {}
 
   async findByUserId(idUsuario: number) {
