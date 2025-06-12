@@ -1,12 +1,17 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Post } from '@nestjs/common';
 import { ReportHistoryService } from './report-history.service';
 
 @Controller('reporte-historial')
 export class ReportHistoryController {
-  constructor(private readonly reportHistoryService: ReportHistoryService) {}
+  constructor(private reportHistoryService: ReportHistoryService) {}
 
-  @Get('historial/:idUsuario')
-  async historial(@Param('idUsuario') idUsuario: string) {
-    return "";
+  @Get()
+  async createReportHistory() {
+    return '';
+  }
+
+  @Post()
+  async updateReportHistory() {
+    return '';
   }
 }
