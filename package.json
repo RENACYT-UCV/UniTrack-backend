@@ -29,6 +29,8 @@
     "@types/qrcode": "^1.5.5",
     "@zxing/library": "^0.21.3",
     "canvas": "^3.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "image-js": "^0.37.0",
     "pg": "^8.16.0",
     "qrcode": "^1.5.4",

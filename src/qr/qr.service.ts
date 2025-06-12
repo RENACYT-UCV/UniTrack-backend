@@ -19,7 +19,14 @@ export class QrService {
         light: '#FFF', 
       },
     });
+    return 'Código QR generado exitosamente en ' + filePath;    
+  }
 
-    return filePath;
+  async verificarCodigoQR(hash: string): Promise<string> {
+    const filePath = path.join(__dirname, '../../qrcodes', `${hash}.png`);
+    if (!fs.existsSync(filePath)) {
+      throw new Error('Código QR no encontrado');
+    }
+    return 'Código QR encontrado en ' + filePath;
   }
 }
