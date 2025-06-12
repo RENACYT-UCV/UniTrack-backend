@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Report } from '../../reports/entities/reports.entity';
+import { Report } from '../../reports/entities/report.entity';
 import { History } from '../../history/entities/history.entity';
 
 @Entity('reporte_historial')

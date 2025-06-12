@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReportHistoryService as ReporteHistorialService } from './report-history.service';
 import { ReporteHistorial } from './entity/reports-history.entity';
 import { ReportHistoryController } from './report-history.controller';
-import { Report } from 'src/reports/entities/reports.entity';
+import { Report } from 'src/reports/entities/report.entity';
 import { History } from 'src/history/entities/history.entity';
 
 @Module({

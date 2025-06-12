@@ -1,19 +1,9 @@
-import { IsOptional, IsString, IsInt } from 'class-validator';
+import { IsInt, IsString } from 'class-validator';
 
 export class UpdateHistoryDto {
-  @IsOptional()
-  @IsString()
-  ubicacion?: string;
-
-  @IsOptional()
-  @IsString()
-  fechaHora?: string;
-
-  @IsOptional()
-  @IsString()
-  temperatura?: string;
-
-  @IsOptional()
   @IsInt()
-  idQr?: number;
+  idHistorial: number;
+
+  @IsString()
+  modo: string;
 }

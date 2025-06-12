@@ -1,19 +1,22 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsArray,
+  ArrayNotEmpty,
+} from 'class-validator';
 
 export class CreateReportsDto {
-  @IsNotEmpty()
-  @IsString()
-  tipo: string;
-
-  @IsNotEmpty()
-  @IsString()
-  descripcion: string;
-
   @IsNotEmpty()
   @IsString()
   fechaHora: string;
 
   @IsNotEmpty()
   @IsInt()
-  idUsuario: number;
+  idAdmin: number;
+
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsInt({ each: true })
+  historiales: number[];
 }
