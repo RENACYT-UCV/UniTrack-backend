@@ -5,7 +5,7 @@ const PATH_ENTITIES = path.join(
   __dirname,
   '..',
   '**',
-  'entities',
+  '{entity,entities}',
   '*.entity.{ts,js}',
 );
 
