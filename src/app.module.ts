@@ -8,7 +8,6 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { ReportsModule } from './reports/reports.module';
-import { AlertasModule } from './alertas/alertas.module';
 import { VerificacionCodigoModule } from './verificacion-codigo/verificacion-codigo.module';
 import { VerificacionCodigoAdminService } from './verificacion-codigo-admin/verificacion-codigo-admin.service';
 import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verificacion-codigo-admin.module';
@@ -29,7 +28,6 @@ import { BlockchainModule } from './blockchain/blockchain.module';
     QrModule,
     AdminModule,
     ReportsModule,
-    AlertasModule,
     VerificacionCodigoModule,
     VerificacionCodigoAdminModule,
     BlockchainModule,

@@ -1,39 +1,41 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
-@Entity('administrador')
-export class Admin {
-  @PrimaryGeneratedColumn({ name: 'idAdmin' })
-  @ApiProperty({ description: 'Unique identifier for the admin', example: 1 })
-  idAdmin: number;
-
-  @Column({ length: 50 })
+export class CreateAdminDto {
   @ApiProperty({ description: 'First name(s) of the admin', example: 'John' })
+  @IsString()
+  @IsNotEmpty()
   nombres: string;
 
-  @Column({ length: 50 })
   @ApiProperty({ description: 'Last name(s) of the admin', example: 'Doe' })
+  @IsString()
+  @IsNotEmpty()
   apellidos: string;
 
-  @Column({ length: 100, unique: true })
   @ApiProperty({
     description: 'Email address of the admin (must be unique)',
     example: 'john.doe@example.com',
   })
+  @IsEmail()
+  @IsNotEmpty()
   correo: string;
 
-  @Column({ length: 255 })
   @ApiProperty({
-    description: 'Hashed password of the admin',
-    example: 'hashedpassword123',
+    description: 'Password for the admin account',
+    example: 'password123',
   })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6, { message: 'Password must be at least 6 characters long' })
   contrasena: string;
 
-  @Column({ length: 50 })
   @ApiProperty({ description: 'Age of the admin', example: '30' })
+  @IsString()
+  @IsNotEmpty()
   edad: string;
 
-  @Column({ length: 50 })
   @ApiProperty({ description: 'Gender of the admin', example: 'Male' })
+  @IsString()
+  @IsNotEmpty()
   sexo: string;
 }

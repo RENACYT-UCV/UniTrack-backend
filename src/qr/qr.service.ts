@@ -33,11 +33,11 @@ export class QrService {
 
     await QRCode.toFile(filePath, hash, {
       color: {
-        dark: '#000', 
-        light: '#FFF', 
+        dark: '#000',
+        light: '#FFF',
       },
     });
-    return 'Código QR generado exitosamente en ' + filePath;    
+    return 'Código QR generado exitosamente en ' + filePath;
   }
 
   async verificarCodigoQR(hash: string): Promise<string> {
@@ -65,7 +65,11 @@ export class QrService {
 
     if (qr) {
       // Elimina el archivo QR anterior si existe
-      const oldFilePath = path.join(__dirname, '../../qrcodes', `${qr.hash}.png`);
+      const oldFilePath = path.join(
+        __dirname,
+        '../../qrcodes',
+        `${qr.hash}.png`,
+      );
       if (fs.existsSync(oldFilePath)) {
         fs.unlinkSync(oldFilePath);
       }
@@ -84,4 +88,3 @@ export class QrService {
     return qr;
   }
 }
-
