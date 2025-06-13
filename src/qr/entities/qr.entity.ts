@@ -12,7 +12,7 @@ export class QR {
   @PrimaryGeneratedColumn({ name: 'idQr' })
   idQr: number;
 
-  @ManyToOne(() => User, (user) => user.historial)
+  @ManyToOne(() => User, (user) => user.historial, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'idUsuario', referencedColumnName: 'idUsuario' })
   usuario: User;
 

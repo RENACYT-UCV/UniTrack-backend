@@ -1,4 +1,3 @@
-
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QrService } from './qr.service';
 import { VerificarQrDto } from './dto/verificar-qr.dto';
@@ -23,5 +22,13 @@ export class QrController {
     console.log('se escaneo el hash', body.hash);
     return this.qrService.verificarCodigoQR(body.hash);
   }
-}
 
+  @Post('usuario-por-qr')
+  async usuarioPorQr(@Body() body: { hash: string }) {
+    const usuario = await this.qrService.obtenerUsuarioPorHash(body.hash);
+    if (!usuario) {
+      return { error: 'Usuario no encontrado para este QR' };
+    }
+    return usuario;
+  }
+}
