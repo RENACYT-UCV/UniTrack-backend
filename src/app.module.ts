@@ -15,6 +15,8 @@ import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verif
 import { ReportHistoryModule } from './report-history/report-history.module';
 import { HistoryModule } from './history/history.module';
 import { QrModule } from './qr/qr.module';
+import { BlockchainController } from './blockchain/blockchain.controller';
+import { BlockchainModule } from './blockchain/blockchain.module';
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { QrModule } from './qr/qr.module';
     AlertasModule,
     VerificacionCodigoModule,
     VerificacionCodigoAdminModule,
+    BlockchainModule,
   ],
   controllers: [AppController],
   providers: [AppService, VerificacionCodigoAdminService],
