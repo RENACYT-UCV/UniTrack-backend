@@ -16,6 +16,7 @@ import { HistoryModule } from './history/history.module';
 import { QrModule } from './qr/qr.module';
 import { BlockchainController } from './blockchain/blockchain.controller';
 import { BlockchainModule } from './blockchain/blockchain.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -31,6 +32,9 @@ import { BlockchainModule } from './blockchain/blockchain.module';
     VerificacionCodigoModule,
     VerificacionCodigoAdminModule,
     BlockchainModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, VerificacionCodigoAdminService],
