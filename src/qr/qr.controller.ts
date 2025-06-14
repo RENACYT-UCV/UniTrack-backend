@@ -47,7 +47,7 @@ export class QrController {
     return { mensaje };
   }
 
-  @Post('verificar')
+  @Post('verificarExpiracion')
   async verificar(@Body() body: VerificarQrDto) {
     try {
       const mensaje = await this.qrService.verificarCodigoQRConExpiracion(
