@@ -7,13 +7,15 @@ import * as bcrypt from 'bcrypt';
 import { UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from './entities/dto/update-user.dto';
 import { QueryFailedError } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+    private jwtService: JwtService,
+  ) { }
 
   async create(
     createUserDto: CreateUserDto,
@@ -115,7 +117,7 @@ export class UsersService {
     }
     // No enviar la contraseña en la respuesta
     const { contrasena: _, ...userWithoutPassword } = user;
-    return { success: true, user: userWithoutPassword };
+    return { success: true, user: userWithoutPassword, access_token: this.jwtService.sign({ sub: user.idUsuario }, { secret: process.env.JWT_SECRET }) };
   }
 
   async update(
