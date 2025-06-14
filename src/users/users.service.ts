@@ -69,6 +69,28 @@ export class UsersService {
     return users;
   }
 
+  async findById(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { idUsuario: id },
+      select: [
+        'idUsuario',
+        'nombres',
+        'apellidos',
+        'correo',
+        'codigoEstudiante',
+        'correoA',
+        'carrera',
+        'ciclo',
+        'edad',
+        'sexo',
+      ],
+    });
+    if (!user) {
+      return { error: 'Usuario no encontrado' };
+    }
+    return user;
+  }
+
   async findByCorreo(correo: string) {
     const user = await this.userRepository.findOne({
       where: { correo },

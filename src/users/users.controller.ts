@@ -17,6 +17,8 @@ import {
   ApiBody,
   ApiParam,
 } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { UseGuards, Request as Req } from '@nestjs/common';
 
 @ApiTags('users')
 @Controller('users')
@@ -49,6 +51,16 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found.' })
   async findByCorreo(@Param('correo') correo: string) {
     return this.usersService.findByCorreo(correo);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  @ApiOperation({ summary: 'Retrieve user profile by token' })
+  @ApiResponse({ status: 200, description: 'User profile retrieved successfully.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  async getProfile(@Req() req) {
+    const userId = req.user.sub;
+    return this.usersService.findById(userId);
   }
 
   @Delete(':id')
