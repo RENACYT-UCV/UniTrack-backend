@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Admin } from './entities/admin.entity';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
+import { QueryFailedError } from 'typeorm';
 
 @Injectable()
 export class AdminService {
@@ -12,9 +13,28 @@ export class AdminService {
     private adminRepository: Repository<Admin>,
   ) {}
 
-  async create(createAdminDto: CreateAdminDto): Promise<Admin> {
+  async create(
+    createAdminDto: CreateAdminDto,
+  ): Promise<{ message?: string; error?: string }> {
     const admin = this.adminRepository.create(createAdminDto);
-    return this.adminRepository.save(admin);
+    try {
+      await this.adminRepository.save(admin);
+      return { message: 'Administrador creado correctamente' };
+    } catch (error) {
+      if (
+        error instanceof QueryFailedError &&
+        error.driverError &&
+        error.driverError.code === '23505'
+      ) {
+        if (error.driverError.detail.includes('correo')) {
+          return { error: 'El correo ya está registrado.' };
+        }
+        return {
+          error: 'Ya existe un administrador con los datos proporcionados.',
+        };
+      }
+      throw error;
+    }
   }
 
   async findAll(): Promise<Admin[]> {

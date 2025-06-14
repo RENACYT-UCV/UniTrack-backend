@@ -1,7 +1,13 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateAdminDto } from './create-admin.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, IsOptional, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  MinLength,
+  Matches,
+} from 'class-validator';
 
 export class UpdateAdminDto extends PartialType(CreateAdminDto) {
   @ApiProperty({
@@ -23,12 +29,17 @@ export class UpdateAdminDto extends PartialType(CreateAdminDto) {
   apellidos?: string;
 
   @ApiProperty({
-    description: 'Email address of the admin (must be unique)',
-    example: 'jane.doe@example.com',
+    description:
+      'Email address of the admin (must be unique and @ucvvirtual.edu.pe)',
+    example: 'jane.doe@ucvvirtual.edu.pe',
     required: false,
   })
   @IsEmail()
   @IsOptional()
+  @Matches(/^[\w-.]+@ucvvirtual\.edu\.pe$/, {
+    message:
+      'El correo debe ser institucional y terminar en @ucvvirtual.edu.pe',
+  })
   correo?: string;
 
   @ApiProperty({

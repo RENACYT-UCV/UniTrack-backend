@@ -128,6 +128,17 @@ export class UsersService {
     if (!user) {
       return { error: 'Usuario no encontrado' };
     }
+
+    // Validar que el nuevo correo no esté en uso por otro usuario
+    if (updateUserDto.correo) {
+      const correoExistente = await this.userRepository.findOne({
+        where: { correo: updateUserDto.correo },
+      });
+      if (correoExistente && correoExistente.idUsuario !== id) {
+        return { error: 'El correo ya está registrado.' };
+      }
+    }
+
     await this.userRepository.update(id, updateUserDto);
     return { message: 'Usuario actualizado correctamente' };
   }

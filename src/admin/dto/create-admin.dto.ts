@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsNotEmpty,
+  MinLength,
+  Matches,
+} from 'class-validator';
 
 export class CreateAdminDto {
   @ApiProperty({ description: 'First name(s) of the admin', example: 'John' })
@@ -13,11 +19,16 @@ export class CreateAdminDto {
   apellidos: string;
 
   @ApiProperty({
-    description: 'Email address of the admin (must be unique)',
-    example: 'john.doe@example.com',
+    description:
+      'Email address of the admin (must be unique and @ucvvirtual.edu.pe)',
+    example: 'john.doe@ucvvirtual.edu.pe',
   })
   @IsEmail()
   @IsNotEmpty()
+  @Matches(/^[\w-.]+@ucvvirtual\.edu\.pe$/, {
+    message:
+      'El correo debe ser institucional y terminar en @ucvvirtual.edu.pe',
+  })
   correo: string;
 
   @ApiProperty({
