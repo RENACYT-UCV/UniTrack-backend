@@ -6,12 +6,16 @@ import * as QRCode from 'qrcode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { User } from '../users/entities/user.entity';
+import { GoogleDriveService } from '../google-drive/google-drive.service';
+import * as jsQR from 'jsqr';
+import { createCanvas, loadImage } from 'canvas';
 
 @Injectable()
 export class QrService {
   constructor(
     @InjectRepository(QR)
     private readonly qrRepository: Repository<QR>,
+    private readonly googleDriveService: GoogleDriveService,
   ) {}
 
   async findByUserId(idUsuario: number) {
@@ -37,7 +41,18 @@ export class QrService {
         light: '#FFF',
       },
     });
-    return 'Código QR generado exitosamente en ' + filePath;
+
+    // Subir a Google Drive
+    try {
+      const driveUrl = await this.googleDriveService.uploadQRCode(
+        filePath,
+        `${hash}.png`,
+      );
+      return `Código QR generado y subido exitosamente. URL: ${driveUrl}`;
+    } catch (error) {
+      console.error('Error al subir a Google Drive:', error);
+      return 'Código QR generado localmente, pero hubo un error al subir a Google Drive';
+    }
   }
 
   async verificarCodigoQR(hash: string): Promise<string> {
@@ -46,6 +61,27 @@ export class QrService {
       throw new Error('Código QR no encontrado');
     }
     return 'Código QR encontrado en ' + filePath;
+  }
+
+  async verificarImagenQR(imagePath: string): Promise<string> {
+    try {
+      const image = await loadImage(imagePath);
+      const canvas = createCanvas(image.width, image.height);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+      if (code) {
+        return code.data;
+      } else {
+        throw new Error('No se pudo encontrar un código QR en la imagen');
+      }
+    } catch (error) {
+      console.error('Error al procesar la imagen:', error);
+      throw new Error('Error al procesar la imagen del código QR');
+    }
   }
 
   async verificarCodigoQRConExpiracion(
