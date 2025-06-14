@@ -5,6 +5,7 @@ import { Admin } from './entities/admin.entity';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { QueryFailedError } from 'typeorm';
+import { LoginAdminDto } from './dto/login-admin.dto';
 
 @Injectable()
 export class AdminService {
@@ -62,5 +63,15 @@ export class AdminService {
     if (result.affected === 0) {
       throw new NotFoundException(`Admin with ID ${id} not found`);
     }
+  }
+
+  async login(loginAdminDto: LoginAdminDto): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({
+      where: { correo: loginAdminDto.correo },
+    });
+    if (!admin) {
+      throw new NotFoundException(`Admin with correo ${loginAdminDto.correo} not found`);
+    }
+    return admin;
   }
 }
