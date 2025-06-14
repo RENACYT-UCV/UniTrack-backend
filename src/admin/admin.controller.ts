@@ -18,6 +18,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { LoginAdminDto } from './dto/login-admin.dto';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -97,5 +98,18 @@ export class AdminController {
   @ApiResponse({ status: 404, description: 'Admin not found.' })
   remove(@Param('id') id: string) {
     return this.adminService.remove(+id);
+  }
+
+  @Post('login')
+  @ApiOperation({ summary: 'Login an admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully logged in.',
+    type: Admin,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiBody({ type: LoginAdminDto })
+  login(@Body() loginAdminDto: LoginAdminDto) {
+    return this.adminService.login(loginAdminDto);
   }
 }
