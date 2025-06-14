@@ -1,33 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Escáner QR desde Laptop</title>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 40px;
-    }
-    #reader {
-      width: 320px;
-      margin: auto;
-    }
-    #resultado {
-      margin-top: 20px;
-      color: green;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <h2>Escanea el Código QR desde tu Laptop</h2>
-  <div id="reader"></div>
-  <p id="resultado">Esperando escaneo...</p>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Escáner QR desde Laptop</title>
+    <script
+      src="https://unpkg.com/html5-qrcode"
+      type="text/javascript"
+    ></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        text-align: center;
+        margin-top: 40px;
+      }
+      #reader {
+        width: 320px;
+        margin: auto;
+      }
+      #resultado {
+        margin-top: 20px;
+        color: green;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Escanea el Código QR desde tu Laptop</h2>
+    <div id="reader"></div>
+    <p id="resultado">Esperando escaneo...</p>
 
-  <!-- descomentar todo el script si deseas verificar el hash -->
-  <!-- <script>
+    <!-- descomentar todo el script si deseas verificar el hash -->
+    <!-- <script>
     function onScanSuccess(qrMessage) {
       document.getElementById('resultado').innerText = "codigo escaneado es: " + qrMessage;
 
@@ -58,5 +61,5 @@
       onScanSuccess
     );
   </script> -->
-</body>
+  </body>
 </html>

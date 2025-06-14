@@ -6,6 +6,7 @@ import { CreateUserDto } from './entities/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UnauthorizedException } from '@nestjs/common';
 import { UpdateUserDto } from './entities/dto/update-user.dto';
+import { QueryFailedError } from 'typeorm';
 
 @Injectable()
 export class UsersService {
@@ -14,14 +15,35 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<{ message: string }> {
+  async create(
+    createUserDto: CreateUserDto,
+  ): Promise<{ message?: string; error?: string }> {
     const hashedPassword = await bcrypt.hash(createUserDto.contrasena, 10);
     const user = this.userRepository.create({
       ...createUserDto,
       contrasena: hashedPassword,
     });
-    await this.userRepository.save(user);
-    return { message: 'Usuario creado correctamente' };
+    try {
+      await this.userRepository.save(user);
+      return { message: 'Usuario creado correctamente' };
+    } catch (error) {
+      // Manejo de errores de duplicidad
+      if (
+        error instanceof QueryFailedError &&
+        error.driverError &&
+        error.driverError.code === '23505'
+      ) {
+        // 23505 = unique_violation en Postgres
+        if (error.driverError.detail.includes('correo')) {
+          return { error: 'El correo ya está registrado.' };
+        }
+        if (error.driverError.detail.includes('codigo_estudiante')) {
+          return { error: 'El código de estudiante ya está registrado.' };
+        }
+        return { error: 'Ya existe un usuario con los datos proporcionados.' };
+      }
+      throw error;
+    }
   }
 
   async findAll(): Promise<
@@ -106,6 +128,17 @@ export class UsersService {
     if (!user) {
       return { error: 'Usuario no encontrado' };
     }
+
+    // Validar que el nuevo correo no esté en uso por otro usuario
+    if (updateUserDto.correo) {
+      const correoExistente = await this.userRepository.findOne({
+        where: { correo: updateUserDto.correo },
+      });
+      if (correoExistente && correoExistente.idUsuario !== id) {
+        return { error: 'El correo ya está registrado.' };
+      }
+    }
+
     await this.userRepository.update(id, updateUserDto);
     return { message: 'Usuario actualizado correctamente' };
   }

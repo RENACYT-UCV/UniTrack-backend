@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   MinLength,
+  Matches, // <-- Importa Matches
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -19,11 +20,15 @@ export class CreateUserDto {
   apellidos: string;
 
   @ApiProperty({
-    example: 'john.doe@example.com',
-    description: 'Email address of the user',
+    example: 'john.doe@ucvvirtual.edu.pe',
+    description: 'Email address of the user (must be @ucvvirtual.edu.pe)',
   })
   @IsNotEmpty()
   @IsEmail()
+  @Matches(/^[\w-.]+@ucvvirtual\.edu\.pe$/, {
+    message:
+      'El correo debe ser institucional y terminar en @ucvvirtual.edu.pe',
+  })
   correo: string;
 
   @ApiProperty({ example: '20230001', description: 'Student code of the user' })

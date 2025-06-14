@@ -7,6 +7,6 @@ export class ReportHistoryController {
 
   @Get('historial/:idUsuario')
   async historial(@Param('idUsuario') idUsuario: string) {
-    return "";
+    return '';
   }
 }

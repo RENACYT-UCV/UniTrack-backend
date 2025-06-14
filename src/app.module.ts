@@ -8,13 +8,14 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { ReportsModule } from './reports/reports.module';
-import { AlertasModule } from './alertas/alertas.module';
 import { VerificacionCodigoModule } from './verificacion-codigo/verificacion-codigo.module';
 import { VerificacionCodigoAdminService } from './verificacion-codigo-admin/verificacion-codigo-admin.service';
 import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verificacion-codigo-admin.module';
 import { ReportHistoryModule } from './report-history/report-history.module';
 import { HistoryModule } from './history/history.module';
 import { QrModule } from './qr/qr.module';
+import { BlockchainController } from './blockchain/blockchain.controller';
+import { BlockchainModule } from './blockchain/blockchain.module';
 
 @Module({
   imports: [
@@ -27,9 +28,9 @@ import { QrModule } from './qr/qr.module';
     QrModule,
     AdminModule,
     ReportsModule,
-    AlertasModule,
     VerificacionCodigoModule,
     VerificacionCodigoAdminModule,
+    BlockchainModule,
   ],
   controllers: [AppController],
   providers: [AppService, VerificacionCodigoAdminService],
