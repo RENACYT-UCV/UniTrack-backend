@@ -14,7 +14,7 @@ export class HistoryService {
     return this.historyRepository
       .createQueryBuilder('r')
       .innerJoin('r.usuario', 'u')
-      .select(['u.idUsuario', 'r.fecha', 'r.hora', 'r.modo'])
+      .select(['u.idUsuario', 'u.nombres', 'u.correo', 'r.fecha', 'r.hora', 'r.modo'])
       .where('u.idUsuario = :idUsuario', { idUsuario })
       .getRawMany();
   }
