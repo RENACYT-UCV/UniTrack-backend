@@ -6,12 +6,14 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { QueryFailedError } from 'typeorm';
 import { LoginAdminDto } from './dto/login-admin.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AdminService {
   constructor(
     @InjectRepository(Admin)
     private adminRepository: Repository<Admin>,
+    private jwtService: JwtService,
   ) {}
 
   async create(
@@ -65,13 +67,18 @@ export class AdminService {
     }
   }
 
-  async login(loginAdminDto: LoginAdminDto): Promise<Admin> {
+  async login(loginAdminDto: LoginAdminDto): Promise<{ access_token: string }> {
     const admin = await this.adminRepository.findOne({
       where: { correo: loginAdminDto.correo },
     });
     if (!admin) {
       throw new NotFoundException(`Admin with correo ${loginAdminDto.correo} not found`);
     }
-    return admin;
+    const payload = { sub: admin.idAdmin, username: admin.correo };
+    return {
+      access_token: await this.jwtService.signAsync(payload, {
+        secret: process.env.JWT_SECRET,
+      }),
+    };
   }
 }
