@@ -48,13 +48,16 @@ export class QrController {
   }
 
   @Post('verificar')
-  @ApiOperation({ summary: 'Verify a QR code' })
-  @ApiBody({ type: VerificarQrDto })
-  @ApiResponse({ status: 200, description: 'QR code verified successfully.' })
-  @ApiResponse({ status: 404, description: 'QR code not found.' })
-  verificar(@Body() body: VerificarQrDto) {
-    console.log('se escaneo el hash', body.hash);
-    return this.qrService.verificarCodigoQR(body.hash);
+  async verificar(@Body() body: VerificarQrDto) {
+    try {
+      const mensaje = await this.qrService.verificarCodigoQRConExpiracion(
+        body.hash,
+        5,
+      ); // 5 minutos de validez
+      return { mensaje };
+    } catch (error) {
+      return { error: error.message };
+    }
   }
 
   @Post('usuario-por-qr')

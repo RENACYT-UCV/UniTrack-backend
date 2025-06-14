@@ -48,6 +48,23 @@ export class QrService {
     return 'Código QR encontrado en ' + filePath;
   }
 
+  async verificarCodigoQRConExpiracion(
+    hash: string,
+    minutosValidez = 5,
+  ): Promise<string> {
+    const qr = await this.qrRepository.findOne({ where: { hash } });
+    if (!qr) {
+      throw new Error('Código QR no encontrado');
+    }
+    const ahora = new Date();
+    const expiracion = new Date(qr.timestamp);
+    expiracion.setMinutes(expiracion.getMinutes() + minutosValidez);
+    if (ahora > expiracion) {
+      throw new Error('Código QR expirado');
+    }
+    return 'Código QR válido y vigente';
+  }
+
   async obtenerUsuarioPorHash(hash: string): Promise<User | null> {
     const qr = await this.qrRepository.findOne({
       where: { hash },
@@ -57,6 +74,15 @@ export class QrService {
   }
 
   async registrarQR(hash: string, idUsuario: number): Promise<QR> {
+    // Verifica si el hash ya está en uso por otro usuario
+    const hashExistente = await this.qrRepository.findOne({
+      where: { hash },
+      relations: ['usuario'],
+    });
+    if (hashExistente && hashExistente.usuario.idUsuario !== idUsuario) {
+      throw new Error('Este hash ya está asociado a otro usuario.');
+    }
+
     // Busca si ya existe un QR para este usuario
     let qr = await this.qrRepository.findOne({
       where: { usuario: { idUsuario } },
