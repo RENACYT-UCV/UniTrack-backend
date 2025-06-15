@@ -118,24 +118,36 @@ export class QrController {
   }
 
   @Post('usuario-por-qr')
-  @ApiOperation({ summary: 'Get user information by QR hash' })
+  @ApiOperation({
+    summary: 'Obtener la URL del QR más reciente por ID de usuario',
+  })
   @ApiBody({
     schema: {
       type: 'object',
-      properties: { hash: { type: 'string', example: 'somehashvalue' } },
+      properties: {
+        idUsuario: { type: 'number', example: 1 },
+      },
     },
   })
   @ApiResponse({
     status: 200,
-    description: 'User found for the given QR hash.',
-    type: User,
+    description: 'URL pública del QR más reciente del usuario',
+    schema: {
+      type: 'object',
+      properties: {
+        qrUrl: { type: 'string', example: 'https://drive.google.com/...' },
+      },
+    },
   })
-  @ApiResponse({ status: 404, description: 'User not found for this QR.' })
-  async usuarioPorQr(@Body() body: { hash: string }) {
-    const usuario = await this.qrService.obtenerUsuarioPorHash(body.hash);
-    if (!usuario) {
-      return { error: 'Usuario no encontrado para este QR' };
+  @ApiResponse({
+    status: 404,
+    description: 'No se encontró un QR para este usuario.',
+  })
+  async usuarioPorQr(@Body() body: { idUsuario: number }) {
+    const qrUrl = await this.qrService.obtenerQRUrlPorUsuario(body.idUsuario);
+    if (!qrUrl) {
+      return { error: 'No se encontró un QR para este usuario' };
     }
-    return usuario;
+    return { qrUrl };
   }
 }

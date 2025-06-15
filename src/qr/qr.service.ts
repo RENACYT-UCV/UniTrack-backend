@@ -159,4 +159,12 @@ export class QrService {
   async obtenerQRporHash(hash: string): Promise<QR | null> {
     return this.qrRepository.findOne({ where: { hash } });
   }
+
+  async obtenerQRUrlPorUsuario(idUsuario: number): Promise<string | null> {
+    const qr = await this.qrRepository.findOne({
+      where: { usuario: { idUsuario } },
+      order: { timestamp: 'DESC' },
+    });
+    return qr?.url ?? null;
+  }
 }
