@@ -109,7 +109,11 @@ export class QrService {
     return qr?.usuario ?? null;
   }
 
-  async registrarQR(hash: string, idUsuario: number): Promise<QR> {
+  async registrarQR(
+    hash: string,
+    idUsuario: number,
+    url?: string,
+  ): Promise<QR> {
     // Verifica si el hash ya está en uso por otro usuario
     const hashExistente = await this.qrRepository.findOne({
       where: { hash },
@@ -138,15 +142,21 @@ export class QrService {
       // Actualiza el hash y el timestamp
       qr.hash = hash;
       qr.timestamp = new Date();
+      qr.url = url;
       await this.qrRepository.save(qr);
     } else {
       // Crea un nuevo QR
       qr = this.qrRepository.create({
         hash,
         usuario: { idUsuario },
+        url,
       });
       await this.qrRepository.save(qr);
     }
     return qr;
+  }
+
+  async obtenerQRporHash(hash: string): Promise<QR | null> {
+    return this.qrRepository.findOne({ where: { hash } });
   }
 }

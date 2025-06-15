@@ -66,8 +66,8 @@ export class BlockchainService {
       ? qrMensaje.split('URL: ')[1]
       : '';
 
-    // Registra el QR en la base de datos enlazado al usuario
-    await this.qrService.registrarQR(newBlock.hash, idUsuario);
+    // Registra el QR en la base de datos enlazado al usuario y guarda la URL
+    await this.qrService.registrarQR(newBlock.hash, idUsuario, qrUrl);
 
     return { block: newBlock, qrUrl };
   }
