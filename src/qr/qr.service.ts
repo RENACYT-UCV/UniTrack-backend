@@ -3,12 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { QR } from './entities/qr.entity';
 import * as QRCode from 'qrcode';
-import * as fs from 'fs';
-import * as path from 'path';
 import { User } from '../users/entities/user.entity';
 import { GoogleDriveService } from '../google-drive/google-drive.service';
 import jsQR from 'jsqr';
 import { createCanvas, loadImage } from 'canvas';
+import * as https from 'https';
 
 @Injectable()
 export class QrService {
@@ -28,14 +27,8 @@ export class QrService {
   }
 
   async generarCodigoQR(hash: string): Promise<string> {
-    const folderPath = path.join(__dirname, '../../qrcodes');
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, { recursive: true });
-    }
-
-    const filePath = path.join(folderPath, `${hash}.png`);
-
-    await QRCode.toFile(filePath, hash, {
+    // Generar el QR en memoria como un buffer
+    const qrBuffer = await QRCode.toBuffer(hash, {
       color: {
         dark: '#000',
         light: '#FFF',
@@ -44,44 +37,59 @@ export class QrService {
 
     // Subir a Google Drive
     try {
-      const driveUrl = await this.googleDriveService.uploadQRCode(
-        filePath,
+      // Crear un stream a partir del buffer para la subida
+      const stream = require('stream');
+      const bufferStream = new stream.PassThrough();
+      bufferStream.end(qrBuffer);
+
+      const driveUrl = await this.googleDriveService.uploadQRCodeFromBuffer(
+        bufferStream,
         `${hash}.png`,
       );
-      return `Código QR generado y subido exitosamente. URL: ${driveUrl}`;
+      return driveUrl;
     } catch (error) {
       console.error('Error al subir a Google Drive:', error);
-      return 'Código QR generado localmente, pero hubo un error al subir a Google Drive';
+      throw new Error('Error al subir el código QR a Google Drive');
     }
   }
 
   async verificarCodigoQR(hash: string): Promise<string> {
-    const filePath = path.join(__dirname, '../../qrcodes', `${hash}.png`);
-    if (!fs.existsSync(filePath)) {
-      throw new Error('Código QR no encontrado');
-    }
-    return 'Código QR encontrado en ' + filePath;
+    // This method is no longer relevant as QR codes are not stored locally.
+    // It might need to be re-evaluated based on new requirements.
+    return 'Verification of QR code hash (not file) is handled elsewhere.';
   }
 
-  async verificarImagenQR(imagePath: string): Promise<string> {
-    try {
-      const image = await loadImage(imagePath);
-      const canvas = createCanvas(image.width, image.height);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0);
+  async verificarImagenQR(imageUrl: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      https.get(imageUrl, (response) => {
+        const data: Buffer[] = [];
+        response.on('data', (chunk) => data.push(chunk));
+        response.on('end', async () => {
+          try {
+            const imageBuffer = Buffer.concat(data);
+            const image = await loadImage(imageBuffer);
+            const canvas = createCanvas(image.width, image.height);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(image, 0, 0);
 
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-      if (code) {
-        return code.data;
-      } else {
-        throw new Error('No se pudo encontrar un código QR en la imagen');
-      }
-    } catch (error) {
-      console.error('Error al procesar la imagen:', error);
-      throw new Error('Error al procesar la imagen del código QR');
-    }
+            if (code) {
+              resolve(code.data);
+            } else {
+              reject(new Error('No se pudo encontrar un código QR en la imagen'));
+            }
+          } catch (error) {
+            console.error('Error al procesar la imagen:', error);
+            reject(new Error('Error al procesar la imagen del código QR'));
+          }
+        });
+      }).on('error', (error) => {
+        console.error('Error al descargar la imagen:', error);
+        reject(new Error('Error al descargar la imagen del código QR'));
+      });
+    });
   }
 
   async verificarCodigoQRConExpiracion(
@@ -130,16 +138,6 @@ export class QrService {
     });
 
     if (qr) {
-      // Elimina el archivo QR anterior si existe
-      const oldFilePath = path.join(
-        __dirname,
-        '../../qrcodes',
-        `${qr.hash}.png`,
-      );
-      if (fs.existsSync(oldFilePath)) {
-        fs.unlinkSync(oldFilePath);
-      }
-      // Actualiza el hash y el timestamp
       qr.hash = hash;
       qr.timestamp = new Date();
       qr.url = url;

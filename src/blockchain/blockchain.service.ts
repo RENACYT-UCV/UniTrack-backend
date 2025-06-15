@@ -61,10 +61,7 @@ export class BlockchainService {
     this.chain.push(newBlock);
 
     // Genera y sube el QR, obtiene la URL
-    const qrMensaje = await this.qrService.generarCodigoQR(newBlock.hash);
-    const qrUrl = qrMensaje.includes('URL: ')
-      ? qrMensaje.split('URL: ')[1]
-      : '';
+    const qrUrl = await this.qrService.generarCodigoQR(newBlock.hash);
 
     // Registra el QR en la base de datos enlazado al usuario y guarda la URL
     await this.qrService.registrarQR(newBlock.hash, idUsuario, qrUrl);

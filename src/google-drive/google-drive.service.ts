@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { google } from 'googleapis';
-import * as fs from 'fs';
-import * as path from 'path';
+
 
 @Injectable()
 export class GoogleDriveService {
@@ -62,7 +61,9 @@ export class GoogleDriveService {
     }
   }
 
-  async uploadQRCode(filePath: string, fileName: string): Promise<string> {
+
+
+  async uploadQRCodeFromBuffer(bufferStream: any, fileName: string): Promise<string> {
     try {
       const fileMetadata = {
         name: fileName,
@@ -71,7 +72,7 @@ export class GoogleDriveService {
 
       const media = {
         mimeType: 'image/png',
-        body: fs.createReadStream(filePath),
+        body: bufferStream,
       };
 
       const response = await this.drive.files.create({
@@ -95,9 +96,9 @@ export class GoogleDriveService {
         fields: 'webViewLink, webContentLink',
       });
 
-      return file.data.webViewLink || '';
+      return file.data.webContentLink || '';
     } catch (error) {
-      console.error('Error al subir archivo a Google Drive:', error);
+      console.error('Error al subir archivo a Google Drive desde buffer:', error);
       throw error;
     }
   }

@@ -5,29 +5,14 @@ import {
   Param,
   Post,
   Query,
-  UseInterceptors,
-  UploadedFile,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { QR } from './entities/qr.entity';
-import { User } from '../users/entities/user.entity';
-
 import { QrService } from './qr.service';
 import { VerificarQrDto } from './dto/verificar-qr.dto';
 
 
 @Controller('qr')
 export class QrController {
-  private uploadPath = 'uploads/qr-images';
-
-  constructor(private readonly qrService: QrService) {
-    // Asegurar que el directorio de uploads existe
-    const fs = require('fs');
-    if (!fs.existsSync(this.uploadPath)) {
-      fs.mkdirSync(this.uploadPath, { recursive: true });
-    }
-  }
+  constructor(private readonly qrService: QrService) {}
 
   @Get('historial/:idUsuario')
 
@@ -43,30 +28,12 @@ export class QrController {
   }
 
   @Post('verificar')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: diskStorage({
-        destination: 'uploads/qr-images',
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          cb(null, uniqueSuffix + '-' + file.originalname);
-        },
-      }),
-    }),
-  )
-  async verificarImagen(@UploadedFile() file: Express.Multer.File) {
+  async verificarImagen(@Body() body: { imagePath: string }) {
     try {
-      if (!file) {
-        throw new Error('No se ha proporcionado ninguna imagen');
-      }
-
-      const hash = await this.qrService.verificarImagenQR(file.path);
+      const hash = await this.qrService.verificarImagenQR(body.imagePath);
       const usuario = await this.qrService.obtenerUsuarioPorHash(hash);
 
-      // Eliminar el archivo temporal después de procesarlo
-      const fs = require('fs');
-      fs.unlinkSync(file.path);
+
 
       if (!usuario) {
         return { error: 'No se encontró un usuario asociado a este código QR' };
