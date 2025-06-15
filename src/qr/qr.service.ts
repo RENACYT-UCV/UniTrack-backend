@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { User } from '../users/entities/user.entity';
 import { GoogleDriveService } from '../google-drive/google-drive.service';
-import * as jsQR from 'jsqr';
+import jsQR from 'jsqr';
 import { createCanvas, loadImage } from 'canvas';
 
 @Injectable()

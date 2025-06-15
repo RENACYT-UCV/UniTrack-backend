@@ -15,10 +15,16 @@ export class GoogleDriveService {
   }
 
   private async initializeGoogleDrive() {
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+    if (!privateKey) {
+      throw new Error(
+        'GOOGLE_PRIVATE_KEY is not defined in environment variables',
+      );
+    }
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        private_key: privateKey.replace(/\\n/g, '\n'),
       },
       projectId: process.env.GOOGLE_PROJECT_ID,
       scopes: this.SCOPES,
@@ -74,7 +80,22 @@ export class GoogleDriveService {
         fields: 'id,webViewLink',
       });
 
-      return response.data.webViewLink;
+      // Hacer el archivo público
+      await this.drive.permissions.create({
+        fileId: response.data.id,
+        requestBody: {
+          role: 'reader',
+          type: 'anyone',
+        },
+      });
+
+      // Obtener el enlace público actualizado
+      const file = await this.drive.files.get({
+        fileId: response.data.id,
+        fields: 'webViewLink, webContentLink',
+      });
+
+      return file.data.webViewLink || '';
     } catch (error) {
       console.error('Error al subir archivo a Google Drive:', error);
       throw error;

@@ -39,7 +39,10 @@ export class BlockchainService {
     return this.chain;
   }
 
-  async addBlock(data: any, idUsuario: number): Promise<Block> {
+  async addBlock(
+    data: any,
+    idUsuario: number,
+  ): Promise<{ block: Block; qrUrl: string }> {
     const previousBlock = this.chain[this.chain.length - 1];
     const timestamp = Date.now();
     const newBlock: Block = {
@@ -57,13 +60,16 @@ export class BlockchainService {
     );
     this.chain.push(newBlock);
 
-    // Genera y guarda el QR automáticamente
-    await this.qrService.generarCodigoQR(newBlock.hash);
+    // Genera y sube el QR, obtiene la URL
+    const qrMensaje = await this.qrService.generarCodigoQR(newBlock.hash);
+    const qrUrl = qrMensaje.includes('URL: ')
+      ? qrMensaje.split('URL: ')[1]
+      : '';
 
     // Registra el QR en la base de datos enlazado al usuario
     await this.qrService.registrarQR(newBlock.hash, idUsuario);
 
-    return newBlock;
+    return { block: newBlock, qrUrl };
   }
 
   isValid(): boolean {
