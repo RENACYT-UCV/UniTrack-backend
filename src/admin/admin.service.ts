@@ -7,6 +7,7 @@ import { UpdateAdminDto } from './dto/update-admin.dto';
 import { QueryFailedError } from 'typeorm';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AdminService {
@@ -18,11 +19,22 @@ export class AdminService {
 
   async create(
     createAdminDto: CreateAdminDto,
-  ): Promise<{ message?: string; error?: string }> {
-    const admin = this.adminRepository.create(createAdminDto);
+  ): Promise<{ message?: string; error?: string; access_token?: string }> {
+    const hashedPassword = await bcrypt.hash(createAdminDto.contrasena, 10);
+    const admin = this.adminRepository.create({
+      ...createAdminDto,
+      contrasena: hashedPassword,
+    });
     try {
-      await this.adminRepository.save(admin);
-      return { message: 'Administrador creado correctamente' };
+      const savedAdmin = await this.adminRepository.save(admin);
+      const payload = { sub: savedAdmin.idAdmin, username: savedAdmin.correo };
+      const access_token = await this.jwtService.signAsync(payload, {
+        secret: process.env.JWT_SECRET,
+      });
+      return { 
+        message: 'Administrador creado correctamente',
+        access_token 
+      };
     } catch (error) {
       if (
         error instanceof QueryFailedError &&
