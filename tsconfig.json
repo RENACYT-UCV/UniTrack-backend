@@ -17,8 +17,9 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+    "types": ["node", "express"],
     "paths": {
-      "@config/*": ["./src/config/*"],
+      "@config/*": ["./src/config/*"]
     }
   }
 }
