@@ -2,19 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './entities/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
-import { UnauthorizedException } from '@nestjs/common';
-import { UpdateUserDto } from './entities/dto/update-user.dto';
-import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { QueryFailedError } from 'typeorm';
+import { CreateUserDto } from './entities/dto/create-user.dto';
+import { UpdateUserDto } from './entities/dto/update-user.dto';
+import { MailService } from '../mail/mail.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+
 
 @Injectable()
 export class UsersService {
+  private passwordResetCodes: Map<string, { code: string; expiry: Date }> = new Map();
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) { }
 
   async create(
@@ -174,5 +180,55 @@ export class UsersService {
     } else {
       return { error: 'Error al eliminar usuario' };
     }
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message?: string; error?: string }> {
+    const { correo } = forgotPasswordDto;
+    const user = await this.userRepository.findOne({ where: { correo } });
+
+    if (!user) {
+      return { error: 'Usuario no encontrado' };
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // Code valid for 10 minutes
+    this.passwordResetCodes.set(correo, { code, expiry });
+
+    const subject = 'Restablecimiento de Contraseña';
+    const text = `Su código de restablecimiento de contraseña es: ${code}. Este código es válido por 10 minutos.`;
+    const html = `<p>Su código de restablecimiento de contraseña es: <strong>${code}</strong>. Este código es válido por 10 minutos.</p>`;
+
+    try {
+      await this.mailService.sendMail(correo, subject, text, html);
+      return { message: 'Código de restablecimiento enviado a su correo.' };
+    } catch (error) {
+      console.error('Error al enviar correo de restablecimiento:', error);
+      return { error: 'Error al enviar el correo de restablecimiento.' };
+    }
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message?: string; error?: string }> {
+    const { correo, code, newPassword } = resetPasswordDto;
+    const storedCode = this.passwordResetCodes.get(correo);
+
+    if (!storedCode || storedCode.code !== code) {
+      return { error: 'Código inválido o expirado.' };
+    }
+
+    if (new Date() > storedCode.expiry) {
+      this.passwordResetCodes.delete(correo); // Remove expired code
+      return { error: 'Código expirado.' };
+    }
+
+    const user = await this.userRepository.findOne({ where: { correo } });
+    if (!user) {
+      return { error: 'Usuario no encontrado.' };
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.userRepository.update(user.idUsuario, { contrasena: hashedPassword });
+    this.passwordResetCodes.delete(correo); // Invalidate code after successful reset
+
+    return { message: 'Contraseña actualizada correctamente.' };
   }
 }

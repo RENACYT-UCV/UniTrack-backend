@@ -5,12 +5,10 @@ import { typeOrmModule } from '@config/database.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { MailModule } from './mail/mail.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
 import { ReportsModule } from './reports/reports.module';
-import { VerificacionCodigoModule } from './verificacion-codigo/verificacion-codigo.module';
-import { VerificacionCodigoAdminService } from './verificacion-codigo-admin/verificacion-codigo-admin.service';
-import { VerificacionCodigoAdminModule } from './verificacion-codigo-admin/verificacion-codigo-admin.module';
 import { ReportHistoryModule } from './report-history/report-history.module';
 import { HistoryModule } from './history/history.module';
 import { QrModule } from './qr/qr.module';
@@ -28,15 +26,14 @@ import { JwtModule } from '@nestjs/jwt';
     HistoryModule,
     QrModule,
     AdminModule,
+    MailModule,
     ReportsModule,
-    VerificacionCodigoModule,
-    VerificacionCodigoAdminModule,
     BlockchainModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, VerificacionCodigoAdminService],
+  providers: [AppService],
 })
 export class AppModule {}
