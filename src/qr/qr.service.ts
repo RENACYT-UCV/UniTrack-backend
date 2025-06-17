@@ -182,4 +182,11 @@ export class QrService {
     });
     return qr?.url ?? null;
   }
+
+  async findLatestQrByUserId(idUsuario: number): Promise<QR | null> {
+    return this.qrRepository.findOne({
+      where: { usuario: { idUsuario } },
+      order: { timestamp: 'DESC' },
+    });
+  }
 }

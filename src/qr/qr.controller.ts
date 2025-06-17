@@ -75,4 +75,18 @@ export class QrController {
       return { error: error.message };
     }
   }
+
+  @Post('latest-qr-type')
+  async getLatestQrType(@Body('idUsuario') idUsuario: number) {
+    try {
+      const latestQr = await this.qrService.findLatestQrByUserId(idUsuario);
+      if (latestQr) {
+        return { tipo: latestQr.tipo };
+      } else {
+        return { tipo: null };
+      }
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
 }
