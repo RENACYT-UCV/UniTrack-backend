@@ -6,4 +6,7 @@ export class VerificarQrDto {
 
   @IsString()
   hash: string;
+
+  @IsString()
+  tipo: string;
 }

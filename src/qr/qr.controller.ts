@@ -1,43 +1,34 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { QrService } from './qr.service';
 import { VerificarQrDto } from './dto/verificar-qr.dto';
-
 
 @Controller('qr')
 export class QrController {
   constructor(private readonly qrService: QrService) {}
 
   @Get('historial/:idUsuario')
-
   async historial(@Param('idUsuario') idUsuario: string) {
     return this.qrService.findByUserId(Number(idUsuario));
   }
 
   @Get('generar')
-
-  async generar(@Query('hash') hash: string) {
+  async generar(@Query('hash') hash: string, @Query('tipo') tipo: string) {
     const mensaje = await this.qrService.generarCodigoQR(hash);
     return { mensaje };
   }
 
   @Post('verificar')
-  async verificarImagen(@Body() body: { imagePath: string }) {
+  async verificarImagen(@Body() body: { imagePath: string; tipo: string }) {
     try {
       const hash = await this.qrService.verificarImagenQR(body.imagePath);
       const usuario = await this.qrService.obtenerUsuarioPorHash(hash);
 
-
-
       if (!usuario) {
         return { error: 'No se encontró un usuario asociado a este código QR' };
       }
+
+      // Optionally, verify the 'tipo' here if needed
+      // For example: if (usuario.tipo !== body.tipo) { throw new Error('Tipo de QR no coincide'); }
 
       return { usuario, hash };
     } catch (error) {
@@ -50,6 +41,7 @@ export class QrController {
     try {
       const mensaje = await this.qrService.verificarCodigoQRConExpiracion(
         body.hash,
+        body.tipo,
         5,
       );
       // Usa el método público para obtener el QR y su URL
@@ -61,12 +53,26 @@ export class QrController {
   }
 
   @Post('usuario-por-qr')
-
   async usuarioPorQr(@Body() body: { idUsuario: number }) {
     const qrUrl = await this.qrService.obtenerQRUrlPorUsuario(body.idUsuario);
     if (!qrUrl) {
       return { error: 'No se encontró un QR para este usuario' };
     }
     return { qrUrl };
+  }
+
+  @Post('registrar')
+  async registrarQr(
+    @Body('hash') hash: string,
+    @Body('idUsuario') idUsuario: number,
+    @Body('tipo') tipo: string,
+    @Body('url') url: string,
+  ) {
+    try {
+      const qr = await this.qrService.registrarQR(hash, idUsuario, tipo, url);
+      return { message: 'QR registrado exitosamente', qr };
+    } catch (error) {
+      return { error: error.message };
+    }
   }
 }

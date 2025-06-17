@@ -25,4 +25,7 @@ export class QR {
 
   @Column({ name: 'url', type: 'text', nullable: true })
   url?: string;
+
+  @Column({ name: 'tipo', type: 'varchar', length: 255, nullable: true })
+  tipo?: string;
 }

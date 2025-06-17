@@ -2,7 +2,10 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class AddBlockDto {
   @IsNotEmpty()
-  data: any;
+  data: {
+    tipo: string;
+    timestamp: string;
+  };
 
   @IsNotEmpty()
   @IsNumber()

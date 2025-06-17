@@ -60,13 +60,27 @@ export class BlockchainService {
     );
     this.chain.push(newBlock);
 
-    // Genera y sube el QR, obtiene la URL
-    const qrUrl = await this.qrService.generarCodigoQR(newBlock.hash);
+    // Generar y registrar QR
+    try {
+      const qrUrl = await this.qrService.generarCodigoQR(newBlock.hash);
+      console.log('addBlock: QR URL generated', qrUrl);
 
-    // Registra el QR en la base de datos enlazado al usuario y guarda la URL
-    await this.qrService.registrarQR(newBlock.hash, idUsuario, qrUrl);
+      await this.qrService.registrarQR(
+        newBlock.hash,
+        idUsuario,
+        data.tipo, // This should be 'entrada' or 'salida'
+        qrUrl, // This should be the Google Drive URL
+      );
+      console.log('addBlock: QR registered successfully');
 
-    return { block: newBlock, qrUrl };
+      return { block: newBlock, qrUrl };
+    } catch (error) {
+      console.error(
+        'addBlock: Error during QR generation or registration',
+        error,
+      );
+      throw error;
+    }
   }
 
   isValid(): boolean {

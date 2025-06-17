@@ -61,42 +61,56 @@ export class QrService {
 
   async verificarImagenQR(imageUrl: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      https.get(imageUrl, (response) => {
-        const data: Buffer[] = [];
-        response.on('data', (chunk) => data.push(chunk));
-        response.on('end', async () => {
-          try {
-            const imageBuffer = Buffer.concat(data);
-            const image = await loadImage(imageBuffer);
-            const canvas = createCanvas(image.width, image.height);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(image, 0, 0);
+      https
+        .get(imageUrl, (response) => {
+          const data: Buffer[] = [];
+          response.on('data', (chunk) => data.push(chunk));
+          response.on('end', async () => {
+            try {
+              const imageBuffer = Buffer.concat(data);
+              const image = await loadImage(imageBuffer);
+              const canvas = createCanvas(image.width, image.height);
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(image, 0, 0);
 
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height);
+              const imageData = ctx.getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height,
+              );
+              const code = jsQR(
+                imageData.data,
+                imageData.width,
+                imageData.height,
+              );
 
-            if (code) {
-              resolve(code.data);
-            } else {
-              reject(new Error('No se pudo encontrar un código QR en la imagen'));
+              if (code) {
+                resolve(code.data);
+              } else {
+                reject(
+                  new Error('No se pudo encontrar un código QR en la imagen'),
+                );
+              }
+            } catch (error) {
+              console.error('Error al procesar la imagen:', error);
+              reject(new Error('Error al procesar la imagen del código QR'));
             }
-          } catch (error) {
-            console.error('Error al procesar la imagen:', error);
-            reject(new Error('Error al procesar la imagen del código QR'));
-          }
+          });
+        })
+        .on('error', (error) => {
+          console.error('Error al descargar la imagen:', error);
+          reject(new Error('Error al descargar la imagen del código QR'));
         });
-      }).on('error', (error) => {
-        console.error('Error al descargar la imagen:', error);
-        reject(new Error('Error al descargar la imagen del código QR'));
-      });
     });
   }
 
   async verificarCodigoQRConExpiracion(
     hash: string,
+    tipo: string,
     minutosValidez = 5,
   ): Promise<string> {
-    const qr = await this.qrRepository.findOne({ where: { hash } });
+    const qr = await this.qrRepository.findOne({ where: { hash, tipo } });
     if (!qr) {
       throw new Error('Código QR no encontrado');
     }
@@ -120,6 +134,7 @@ export class QrService {
   async registrarQR(
     hash: string,
     idUsuario: number,
+    tipo: string,
     url?: string,
   ): Promise<QR> {
     // Verifica si el hash ya está en uso por otro usuario
@@ -141,6 +156,7 @@ export class QrService {
       qr.hash = hash;
       qr.timestamp = new Date();
       qr.url = url;
+      qr.tipo = tipo;
       await this.qrRepository.save(qr);
     } else {
       // Crea un nuevo QR
@@ -148,6 +164,7 @@ export class QrService {
         hash,
         usuario: { idUsuario },
         url,
+        tipo,
       });
       await this.qrRepository.save(qr);
     }
