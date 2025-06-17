@@ -107,10 +107,9 @@ export class QrService {
 
   async verificarCodigoQRConExpiracion(
     hash: string,
-    tipo: string,
     minutosValidez = 5,
   ): Promise<string> {
-    const qr = await this.qrRepository.findOne({ where: { hash, tipo } });
+    const qr = await this.qrRepository.findOne({ where: { hash } });
     if (!qr) {
       throw new Error('Código QR no encontrado');
     }
@@ -184,9 +183,10 @@ export class QrService {
   }
 
   async findLatestQrByUserId(idUsuario: number): Promise<QR | null> {
-    return this.qrRepository.findOne({
+    const latestQr = await this.qrRepository.findOne({
       where: { usuario: { idUsuario } },
       order: { timestamp: 'DESC' },
     });
+    return latestQr;
   }
 }

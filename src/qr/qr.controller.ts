@@ -41,10 +41,8 @@ export class QrController {
     try {
       const mensaje = await this.qrService.verificarCodigoQRConExpiracion(
         body.hash,
-        body.tipo,
         5,
       );
-      // Usa el método público para obtener el QR y su URL
       const qr = await this.qrService.obtenerQRporHash(body.hash);
       return { mensaje, qrUrl: qr?.url ?? null };
     } catch (error) {
