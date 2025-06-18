@@ -23,6 +23,17 @@ export class HistoryController {
 
   @Get('entradas')
   async entradas() {
-    return await this.HistoryService.findEntradas();
+    const filter = this.HistoryService.findEntradas().then((value) =>
+      value.filter((value) => value.modo === 'Ingreso'),
+    );
+    return await filter;
+  }
+
+  @Get('salidas')
+  async salidas() {
+    const filter = this.HistoryService.findEntradas().then((value) =>
+      value.filter((value) => value.modo === 'Salida'),
+    );
+    return await filter;
   }
 }
