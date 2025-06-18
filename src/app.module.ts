@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { envConfig } from '@config/env.config';
 import { typeOrmModule } from '@config/database.config';
 
@@ -15,6 +16,7 @@ import { QrModule } from './qr/qr.module';
 import { BlockchainController } from './blockchain/blockchain.controller';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
@@ -30,10 +32,17 @@ import { JwtModule } from '@nestjs/jwt';
     ReportsModule,
     BlockchainModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET || 'your-secret-key',
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
