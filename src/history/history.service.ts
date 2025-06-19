@@ -72,7 +72,8 @@ export class HistoryService {
 
     return rows.map((row) => ({
       id: row.h_idHistorial,
-      usuario: `${row.u_nombres} ${row.u_apellidos}`,
+      nombres: row.u_nombres,
+      apellidos: row.u_apellidos,
       correo: row.u_correo,
       fecha: row.h_fecha,
       hora: row.h_hora,
