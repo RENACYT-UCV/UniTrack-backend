@@ -50,6 +50,7 @@ export class HistoryService {
       fecha: dto.fecha,
       hora: dto.hora,
       modo: dto.modo,
+      hash: dto.hash,
     });
 
     return await this.historyRepository.save(historial);
@@ -58,15 +59,15 @@ export class HistoryService {
   async findExistingRecord(
     idUsuario: number,
     fecha: string,
-    hora: string,
     modo: string,
+    hash: string,
   ): Promise<History | null> {
     return this.historyRepository.findOne({
       where: {
         usuario: { idUsuario },
         fecha: fecha,
-        hora: hora,
         modo: modo,
+        hash: hash,
       },
     });
   }

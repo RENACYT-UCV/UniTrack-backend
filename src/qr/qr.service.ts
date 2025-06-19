@@ -128,12 +128,18 @@ export class QrService {
     }
 
     // Verificar si ya existe un registro en historial para este QR y usuario
+    const idUsuario = qr.usuario.idUsuario;
+    const fecha = ahora.format('YYYY-MM-DD');
+    const modo = qr.tipo || 'verificacion';
+
+    console.log(`Buscando historial existente para: Usuario=${idUsuario}, Fecha=${fecha}, Modo=${modo}, Hash=${hash}`);
     const historialExistente = await this.historyService.findExistingRecord(
-      qr.usuario.idUsuario,
-      ahora.format('YYYY-MM-DD'),
-      ahora.format('HH:mm:ss'),
-      qr.tipo || 'verificacion',
+      idUsuario,
+      fecha,
+      modo,
+      hash,
     );
+    console.log(`Resultado de findExistingRecord: ${historialExistente ? 'Encontrado' : 'No encontrado'}`);
 
     if (historialExistente) {
       throw new Error('QR ya utilizado');
@@ -145,6 +151,7 @@ export class QrService {
       fecha: ahora.format('YYYY-MM-DD'),
       hora: ahora.format('HH:mm:ss'),
       modo: qr.tipo || 'verificacion',
+      hash: hash,
     });
 
     return 'Código QR válido y vigente';

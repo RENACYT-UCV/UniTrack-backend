@@ -27,6 +27,9 @@ export class History {
   @Column({ length: 50, nullable: true })
   modo?: string;
 
+  @Column({ length: 255, nullable: true })
+  hash?: string;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   timestamp: Date;
 
