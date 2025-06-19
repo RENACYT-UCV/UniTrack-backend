@@ -26,7 +26,7 @@ export class QrController {
       if (!usuario) {
         return { error: 'No se encontró un usuario asociado a este código QR' };
       }
-      return { usuario, hash };
+      return { hash }; // Solo retorna el hash
     } catch (error) {
       return { error: error.message };
     }
