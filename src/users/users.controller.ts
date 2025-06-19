@@ -31,6 +31,11 @@ export class UsersController {
     return this.usersService.forgotPassword(forgotPasswordDto);
   }
 
+  @Post('verify-code')
+verifyCode(@Body('code') code: number) {
+  return this.usersService.verifyToken(code);
+}
+
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.usersService.resetPassword(resetPasswordDto);

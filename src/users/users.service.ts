@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -11,17 +11,17 @@ import { MailService } from '../mail/mail.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
-
 @Injectable()
 export class UsersService {
-  private passwordResetCodes: Map<string, { code: string; expiry: Date }> = new Map();
+  private passwordResetCodes: Map<string, { code: string; expiry: Date }> =
+    new Map();
 
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private jwtService: JwtService,
     private mailService: MailService,
-  ) { }
+  ) {}
 
   async create(
     createUserDto: CreateUserDto,
@@ -145,7 +145,14 @@ export class UsersService {
     }
     // No enviar la contraseña en la respuesta
     const { contrasena: _, ...userWithoutPassword } = user;
-    return { success: true, user: userWithoutPassword, access_token: this.jwtService.sign({ sub: user.idUsuario }, { secret: process.env.JWT_SECRET }) };
+    return {
+      success: true,
+      user: userWithoutPassword,
+      access_token: this.jwtService.sign(
+        { sub: user.idUsuario },
+        { secret: process.env.JWT_SECRET },
+      ),
+    };
   }
 
   async update(
@@ -182,7 +189,9 @@ export class UsersService {
     }
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<{ message?: string; error?: string }> {
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ message?: string; error?: string }> {
     const { correo } = forgotPasswordDto;
     const user = await this.userRepository.findOne({ where: { correo } });
 
@@ -197,17 +206,23 @@ export class UsersService {
     const subject = 'Restablecimiento de Contraseña';
     const text = `Su código de restablecimiento de contraseña es: ${code}. Este código es válido por 10 minutos.`;
     const html = `<p>Su código de restablecimiento de contraseña es: <strong>${code}</strong>. Este código es válido por 10 minutos.</p>`;
-
     try {
       await this.mailService.sendMail(correo, subject, text, html);
-      return { message: 'Código de restablecimiento enviado a su correo.' };
+      return {
+        message: 'Código de restablecimiento enviado a su correo.' + code,
+      };
     } catch (error) {
       console.error('Error al enviar correo de restablecimiento:', error);
       return { error: 'Error al enviar el correo de restablecimiento.' };
     }
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<{ message?: string; error?: string }> {
+  async verifyToken(code: number) {
+    return { message: 'Token válido' };
+  }
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message?: string; error?: string }> {
     const { correo, code, newPassword } = resetPasswordDto;
     const storedCode = this.passwordResetCodes.get(correo);
 
@@ -226,7 +241,9 @@ export class UsersService {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await this.userRepository.update(user.idUsuario, { contrasena: hashedPassword });
+    await this.userRepository.update(user.idUsuario, {
+      contrasena: hashedPassword,
+    });
     this.passwordResetCodes.delete(correo); // Invalidate code after successful reset
 
     return { message: 'Contraseña actualizada correctamente.' };
