@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
   ForbiddenException,
+  Patch,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
@@ -23,6 +24,7 @@ export class AuthGuard implements CanActivate {
     { path: '/auth/login', method: 'POST' },
     { path: '/admin/login', method: 'POST' },
     { path: '/blockchain/add', method: 'POST' },
+    { path: '/historial/historial/:idUsuario', method: 'GET' },
   ];
 
   constructor(private jwtService: JwtService) {}
