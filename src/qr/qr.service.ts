@@ -132,14 +132,12 @@ export class QrService {
     const fecha = ahora.format('YYYY-MM-DD');
     const modo = qr.tipo || 'verificacion';
 
-    console.log(`Buscando historial existente para: Usuario=${idUsuario}, Fecha=${fecha}, Modo=${modo}, Hash=${hash}`);
     const historialExistente = await this.historyService.findExistingRecord(
       idUsuario,
       fecha,
       modo,
       hash,
     );
-    console.log(`Resultado de findExistingRecord: ${historialExistente ? 'Encontrado' : 'No encontrado'}`);
 
     if (historialExistente) {
       throw new Error('QR ya utilizado');
@@ -153,6 +151,8 @@ export class QrService {
       modo: qr.tipo || 'verificacion',
       hash: hash,
     });
+
+    await this.deleteQrByHash(hash);
 
     return 'Código QR válido y vigente';
   }
@@ -223,5 +223,9 @@ export class QrService {
       order: { timestamp: 'DESC' },
     });
     return latestQr;
+  }
+
+  async deleteQrByHash(hash: string): Promise<void> {
+    await this.qrRepository.delete({ hash });
   }
 }
