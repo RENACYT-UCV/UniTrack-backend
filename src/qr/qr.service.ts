@@ -8,6 +8,7 @@ import { GoogleDriveService } from '../google-drive/google-drive.service';
 import jsQR from 'jsqr';
 import { createCanvas, loadImage } from 'canvas';
 import * as https from 'https';
+import { HistoryService } from '../history/history.service'; // Asegúrate de importar el servicio
 
 @Injectable()
 export class QrService {
@@ -15,6 +16,7 @@ export class QrService {
     @InjectRepository(QR)
     private readonly qrRepository: Repository<QR>,
     private readonly googleDriveService: GoogleDriveService,
+    private readonly historyService: HistoryService, // Inyecta el servicio de historial
   ) {}
 
   async findByUserId(idUsuario: number) {
@@ -109,7 +111,10 @@ export class QrService {
     hash: string,
     minutosValidez = 5,
   ): Promise<string> {
-    const qr = await this.qrRepository.findOne({ where: { hash } });
+    const qr = await this.qrRepository.findOne({
+      where: { hash },
+      relations: ['usuario'],
+    });
     if (!qr) {
       throw new Error('Código QR no encontrado');
     }
@@ -119,6 +124,15 @@ export class QrService {
     if (ahora > expiracion) {
       throw new Error('Código QR expirado');
     }
+
+    // Registrar en historial
+    await this.historyService.create({
+      idUsuario: qr.usuario.idUsuario,
+      fecha: ahora.toISOString().slice(0, 10),
+      hora: ahora.toTimeString().slice(0, 8),
+      modo: qr.tipo || 'verificacion',
+    });
+
     return 'Código QR válido y vigente';
   }
 
