@@ -1,6 +1,7 @@
 export class HistoryEntryDto {
   id: number;
-  usuario: string;
+  nombres: string;
+  apellidos: string;
   correo: string;
   fecha: string;
   hora: string;
