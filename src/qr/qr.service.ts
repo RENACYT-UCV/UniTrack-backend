@@ -127,6 +127,18 @@ export class QrService {
       throw new Error('Código QR expirado');
     }
 
+    // Verificar si ya existe un registro en historial para este QR y usuario
+    const historialExistente = await this.historyService.findExistingRecord(
+      qr.usuario.idUsuario,
+      ahora.format('YYYY-MM-DD'),
+      ahora.format('HH:mm:ss'),
+      qr.tipo || 'verificacion',
+    );
+
+    if (historialExistente) {
+      throw new Error('Código QR ya utilizado');
+    }
+
     // Registrar en historial
     await this.historyService.create({
       idUsuario: qr.usuario.idUsuario,
