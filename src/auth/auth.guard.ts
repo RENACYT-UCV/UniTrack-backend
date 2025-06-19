@@ -23,8 +23,10 @@ export class AuthGuard implements CanActivate {
     { path: '/qr/registrar', method: 'POST' },
     { path: '/auth/login', method: 'POST' },
     { path: '/admin/login', method: 'POST' },
+    { path: '/admin/add', method: 'POST' },
     { path: '/blockchain/add', method: 'POST' },
     { path: '/historial/historial/:idUsuario', method: 'GET' },
+    { path: '/qr/verificarExpiracion', method: 'POST' },
   ];
 
   constructor(private jwtService: JwtService) {}
@@ -60,10 +62,14 @@ export class AuthGuard implements CanActivate {
   }
 
   private isPublicRoute(request: Request): boolean {
-    return this.publicRoutes.some(
-      (route) =>
-        request.path === route.path &&
-        request.method.toUpperCase() === route.method,
-    );
+    return this.publicRoutes.some((route) => {
+      const routeRegex = new RegExp(
+        `^${route.path.replace(/\/:[^/]+/g, '/[^/]+')}$`,
+      );
+      return (
+        routeRegex.test(request.path) &&
+        request.method.toUpperCase() === route.method
+      );
+    });
   }
 }
