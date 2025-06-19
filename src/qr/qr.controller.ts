@@ -26,10 +26,6 @@ export class QrController {
       if (!usuario) {
         return { error: 'No se encontró un usuario asociado a este código QR' };
       }
-
-      // Optionally, verify the 'tipo' here if needed
-      // For example: if (usuario.tipo !== body.tipo) { throw new Error('Tipo de QR no coincide'); }
-
       return { usuario, hash };
     } catch (error) {
       return { error: error.message };

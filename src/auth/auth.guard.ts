@@ -12,27 +12,34 @@ import { Request } from 'express';
 export class AuthGuard implements CanActivate {
   private publicRoutes = [
     { path: '/users/login', method: 'POST' },
-    { path: '/users', method: 'POST' }, 
+    { path: '/users', method: 'POST' },
     { path: '/users/forgot-password', method: 'POST' },
     { path: '/users/reset-password', method: 'POST' },
+    { path: '/qr/usuario-por-qr', method: 'POST' },
+    { path: '/qr/latest-qr-type', method: 'POST' },
+    { path: '/qr/generar', method: 'GET' },
+    { path: '/qr/verificarExpiracion', method: 'POST' },
+    { path: '/qr/registrar', method: 'POST' },
     { path: '/auth/login', method: 'POST' },
-    { path: '/admin/login', method: 'POST' }, 
+    { path: '/admin/login', method: 'POST' },
   ];
 
   constructor(private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    
+
     if (this.isPublicRoute(request)) {
       return Promise.resolve(true);
     }
 
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException('No se proporcionó un token de autenticación');
+      throw new UnauthorizedException(
+        'No se proporcionó un token de autenticación',
+      );
     }
-    
+
     try {
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
@@ -51,9 +58,9 @@ export class AuthGuard implements CanActivate {
 
   private isPublicRoute(request: Request): boolean {
     return this.publicRoutes.some(
-      (route) => 
-        request.path === route.path && 
-        request.method.toUpperCase() === route.method
+      (route) =>
+        request.path === route.path &&
+        request.method.toUpperCase() === route.method,
     );
   }
 }
