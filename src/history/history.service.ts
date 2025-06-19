@@ -55,6 +55,22 @@ export class HistoryService {
     return await this.historyRepository.save(historial);
   }
 
+  async findExistingRecord(
+    idUsuario: number,
+    fecha: string,
+    hora: string,
+    modo: string,
+  ): Promise<History | null> {
+    return this.historyRepository.findOne({
+      where: {
+        usuario: { idUsuario },
+        fecha: fecha,
+        hora: hora,
+        modo: modo,
+      },
+    });
+  }
+
   async findEntradas(): Promise<HistoryEntryDto[]> {
     const rows = await this.historyRepository
       .createQueryBuilder('h')
@@ -72,7 +88,8 @@ export class HistoryService {
 
     return rows.map((row) => ({
       id: row.h_idHistorial,
-      usuario: `${row.u_nombres} ${row.u_apellidos}`,
+      nombres: row.u_nombres,
+      apellidos: row.u_apellidos,
       correo: row.u_correo,
       fecha: row.h_fecha,
       hora: row.h_hora,

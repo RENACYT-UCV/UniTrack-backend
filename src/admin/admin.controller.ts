@@ -20,7 +20,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Post()
+  @Post('add')
   async create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminService.create(createAdminDto);
   }

@@ -79,7 +79,7 @@ export class AdminService {
     }
   }
 
-  async login(loginAdminDto: LoginAdminDto): Promise<{ access_token: string }> {
+  async login(loginAdminDto: LoginAdminDto): Promise<{ access_token: string, current_user }> {
     const admin = await this.adminRepository.findOne({
       where: { correo: loginAdminDto.correo },
     });
@@ -88,8 +88,10 @@ export class AdminService {
     }
     const payload = { sub: admin.idAdmin, username: admin.correo };
     return {
+      current_user: admin,
       access_token: await this.jwtService.signAsync(payload, {
         secret: process.env.JWT_SECRET,
+        expiresIn: '1h',
       }),
     };
   }

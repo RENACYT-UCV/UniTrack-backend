@@ -8,6 +8,8 @@ import { GoogleDriveService } from '../google-drive/google-drive.service';
 import jsQR from 'jsqr';
 import { createCanvas, loadImage } from 'canvas';
 import * as https from 'https';
+import { HistoryService } from '../history/history.service'; // Asegúrate de importar el servicio
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class QrService {
@@ -15,6 +17,7 @@ export class QrService {
     @InjectRepository(QR)
     private readonly qrRepository: Repository<QR>,
     private readonly googleDriveService: GoogleDriveService,
+    private readonly historyService: HistoryService, // Inyecta el servicio de historial
   ) {}
 
   async findByUserId(idUsuario: number) {
@@ -109,16 +112,41 @@ export class QrService {
     hash: string,
     minutosValidez = 5,
   ): Promise<string> {
-    const qr = await this.qrRepository.findOne({ where: { hash } });
+    const qr = await this.qrRepository.findOne({
+      where: { hash },
+      relations: ['usuario'],
+    });
     if (!qr) {
       throw new Error('Código QR no encontrado');
     }
-    const ahora = new Date();
-    const expiracion = new Date(qr.timestamp);
-    expiracion.setMinutes(expiracion.getMinutes() + minutosValidez);
-    if (ahora > expiracion) {
+    const ahora = moment().tz('America/Lima'); // Obtener la hora actual en la zona horaria de Lima
+    const expiracion = moment(qr.timestamp).tz('America/Lima');
+    expiracion.add(minutosValidez, 'minutes');
+
+    if (ahora.isAfter(expiracion)) {
       throw new Error('Código QR expirado');
     }
+
+    // Verificar si ya existe un registro en historial para este QR y usuario
+    const historialExistente = await this.historyService.findExistingRecord(
+      qr.usuario.idUsuario,
+      ahora.format('YYYY-MM-DD'),
+      ahora.format('HH:mm:ss'),
+      qr.tipo || 'verificacion',
+    );
+
+    if (historialExistente) {
+      throw new Error('Código QR ya utilizado');
+    }
+
+    // Registrar en historial
+    await this.historyService.create({
+      idUsuario: qr.usuario.idUsuario,
+      fecha: ahora.format('YYYY-MM-DD'),
+      hora: ahora.format('HH:mm:ss'),
+      modo: qr.tipo || 'verificacion',
+    });
+
     return 'Código QR válido y vigente';
   }
 
@@ -153,7 +181,7 @@ export class QrService {
 
     if (qr) {
       qr.hash = hash;
-      qr.timestamp = new Date();
+      qr.timestamp = moment().tz('America/Lima').toDate(); // Usar la hora de Lima
       qr.url = url;
       qr.tipo = tipo;
       await this.qrRepository.save(qr);
