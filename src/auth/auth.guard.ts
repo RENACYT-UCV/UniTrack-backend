@@ -22,6 +22,7 @@ export class AuthGuard implements CanActivate {
     { path: '/qr/registrar', method: 'POST' },
     { path: '/auth/login', method: 'POST' },
     { path: '/admin/login', method: 'POST' },
+    { path: '/blockchain/add', method: 'POST' },
   ];
 
   constructor(private jwtService: JwtService) {}
