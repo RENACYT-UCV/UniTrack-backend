@@ -136,7 +136,7 @@ export class QrService {
     );
 
     if (historialExistente) {
-      throw new Error('Código QR ya utilizado');
+      throw new Error('QR ya utilizado');
     }
 
     // Registrar en historial
