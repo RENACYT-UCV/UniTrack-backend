@@ -28,6 +28,9 @@ export class QrController {
       }
       return { hash }; // Solo retorna el hash
     } catch (error) {
+      if (error.message === 'QR ya utilizado') {
+        return { error: 'QR ya utilizado', alreadyUsed: true };
+      }
       return { error: error.message };
     }
   }
@@ -42,6 +45,9 @@ export class QrController {
       const qr = await this.qrService.obtenerQRporHash(body.hash);
       return { mensaje, qrUrl: qr?.url ?? null };
     } catch (error) {
+      if (error.message === 'QR ya utilizado') {
+        return { error: 'QR ya utilizado', alreadyUsed: true };
+      }
       return { error: error.message };
     }
   }

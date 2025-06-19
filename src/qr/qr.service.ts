@@ -128,15 +128,19 @@ export class QrService {
     }
 
     // Verificar si ya existe un registro en historial para este QR y usuario
+    const idUsuario = qr.usuario.idUsuario;
+    const fecha = ahora.format('YYYY-MM-DD');
+    const modo = qr.tipo || 'verificacion';
+
     const historialExistente = await this.historyService.findExistingRecord(
-      qr.usuario.idUsuario,
-      ahora.format('YYYY-MM-DD'),
-      ahora.format('HH:mm:ss'),
-      qr.tipo || 'verificacion',
+      idUsuario,
+      fecha,
+      modo,
+      hash,
     );
 
     if (historialExistente) {
-      throw new Error('Código QR ya utilizado');
+      throw new Error('QR ya utilizado');
     }
 
     // Registrar en historial
@@ -145,7 +149,10 @@ export class QrService {
       fecha: ahora.format('YYYY-MM-DD'),
       hora: ahora.format('HH:mm:ss'),
       modo: qr.tipo || 'verificacion',
+      hash: hash,
     });
+
+    await this.deleteQrByHash(hash);
 
     return 'Código QR válido y vigente';
   }
@@ -216,5 +223,9 @@ export class QrService {
       order: { timestamp: 'DESC' },
     });
     return latestQr;
+  }
+
+  async deleteQrByHash(hash: string): Promise<void> {
+    await this.qrRepository.delete({ hash });
   }
 }

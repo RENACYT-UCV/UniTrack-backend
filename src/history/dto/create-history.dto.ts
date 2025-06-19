@@ -3,4 +3,5 @@ export class CreateHistoryDto {
   fecha: string;
   hora: string;
   modo?: string;
+  hash?: string;
 }
