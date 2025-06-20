@@ -149,7 +149,7 @@ export class AdminService {
     }
   }
 
-  async verifyToken(email: string, code: number) {
+  async verifyToken(email: string, code: string) {
     const storedCode = this.passwordResetCodes.get(email);
     if (!storedCode) {
       return { error: 'Código no encontrado o expirado.' };
@@ -187,13 +187,27 @@ export class AdminService {
 
     const admin = await this.adminRepository.findOne({ where: { correo } });
     if (!admin) {
+      console.log(`Admin with correo ${correo} not found.`);
       return { error: 'Administrador no encontrado.' };
     }
 
+    console.log(`Admin found: ${admin.idAdmin}, correo: ${admin.correo}`);
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await this.adminRepository.update(admin.idAdmin, {
-      contrasena: hashedPassword,
-    });
+    console.log(`New hashed password generated.`);
+
+    try {
+      const updateResult = await this.adminRepository.update(admin.idAdmin, {
+        contrasena: hashedPassword,
+      });
+      console.log(`Update result:`, updateResult);
+      if (updateResult.affected === 0) {
+        console.log(`No rows affected by update for admin ID ${admin.idAdmin}.`);
+        return { error: 'No se pudo actualizar la contraseña. El administrador no fue encontrado o la contraseña ya era la misma.' };
+      }
+    } catch (updateError) {
+      console.error('Error during password update:', updateError);
+      return { error: 'Error interno al actualizar la contraseña.' };
+    }
     this.passwordResetCodes.delete(correo); // Invalidate code after successful reset
 
     return { message: 'Contraseña actualizada correctamente.' };

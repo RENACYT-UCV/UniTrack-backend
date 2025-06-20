@@ -59,7 +59,7 @@ export class AdminController {
   }
 
   @Post('verify-code')
-  async verifyCode(@Body() { email, code }: { email: string; code: number }) {
+  async verifyCode(@Body() { email, code }: { email: string; code: string }) {
     return this.adminService.verifyToken(email, code);
   }
 
