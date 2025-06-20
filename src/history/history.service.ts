@@ -85,7 +85,7 @@ export class HistoryService {
         'u.apellidos',
         'u.correo',
       ])
-      .where('h.modo = :modo', { modo: 'Ingreso' })
+      .where('h.modo = :modo', { modo: 'entrada' })
       .getRawMany();
 
     return rows.map((row) => ({
@@ -112,7 +112,7 @@ export class HistoryService {
         'u.apellidos',
         'u.correo',
       ])
-      .where('h.modo = :modo', { modo: 'Salida' })
+      .where('h.modo = :modo', { modo: 'salida' })
       .getRawMany();
 
     return rows.map((row) => ({
