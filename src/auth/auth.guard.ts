@@ -26,6 +26,7 @@ export class AuthGuard implements CanActivate {
     { path: '/admin/add', method: 'POST' },
     { path: '/admin/forgot-password', method: 'POST' },
     { path: '/admin/verify-code', method: 'POST' },
+    { path: '/admin/reset-password', method: 'POST' },
     { path: '/blockchain/add', method: 'POST' },
     { path: '/historial/historial/:idUsuario', method: 'GET' },
     { path: '/historial/entradas', method: 'GET' },
