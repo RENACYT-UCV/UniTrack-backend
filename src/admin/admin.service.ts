@@ -125,7 +125,7 @@ export class AdminService {
     const text = `Su código de restablecimiento de contraseña es: ${code}. Este código es válido por 10 minutos.`;
     const html = `<p>Su código de restablecimiento de contraseña es: <strong>${code}</strong>. Este código es válido por 10 minutos.</p>`;
     try {
-      await this.mailService.sendMail(correo, subject, text, html);
+      await this.mailService.sendMail(forgotPasswordDto.correo, subject, text, html);
       return {
         message: `Código de restablecimiento enviado a su correo. ${code}`,
       };
