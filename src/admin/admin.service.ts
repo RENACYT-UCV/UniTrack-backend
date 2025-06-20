@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Admin } from './entities/admin.entity';
@@ -96,6 +96,15 @@ export class AdminService {
       throw new NotFoundException(
         `Admin with correo ${loginAdminDto.correo} not found`,
       );
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      loginAdminDto.contrasena,
+      admin.contrasena,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Contraseña incorrecta');
     }
     const payload = { sub: admin.idAdmin, username: admin.correo };
     return {
