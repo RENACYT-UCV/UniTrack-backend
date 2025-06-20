@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -206,36 +206,14 @@ export class UsersService {
     const subject = 'Restablecimiento de Contraseña';
     const text = `Su código de restablecimiento de contraseña es: ${code}. Este código es válido por 10 minutos.`;
     const html = `<p>Su código de restablecimiento de contraseña es: <strong>${code}</strong>. Este código es válido por 10 minutos.</p>`;
+
     try {
       await this.mailService.sendMail(correo, subject, text, html);
-      return {
-        message: `Código de restablecimiento enviado a su correo. ${code}`,
-      };
+      return { message: 'Código de restablecimiento enviado a su correo.' };
     } catch (error) {
       console.error('Error al enviar correo de restablecimiento:', error);
       return { error: 'Error al enviar el correo de restablecimiento.' };
     }
-  }
-
-  async verifyToken(email: string, code: number) {
-    const storedCode = this.passwordResetCodes.get(email);
-    if (!storedCode) {
-      return { error: 'Código no encontrado o expirado.' };
-    }
-
-    if (new Date() > storedCode.expiry) {
-      this.passwordResetCodes.delete(email);
-      return { error: 'Código expirado.' };
-    }
-
-    // compare the provided code with the stored code
-    if (storedCode.code !== code.toString()) {
-      return { error: 'Código inválido.' };
-    }
-    // If the code is valid, return a success message
-    this.passwordResetCodes.delete(email);
-
-    return { message: 'Código verificado correctamente.' };
   }
 
   async resetPassword(
