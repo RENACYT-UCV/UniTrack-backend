@@ -54,7 +54,6 @@ export class AdminController {
   }
 
   @Post('forgot-password')
-  @Post('forgot-password')
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.adminService.forgotPassword(forgotPasswordDto);
   }
