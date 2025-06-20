@@ -54,12 +54,13 @@ export class AdminController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body() { email }: any) {
-    return this.adminService.forgotPassword(email);
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.adminService.forgotPassword(forgotPasswordDto);
   }
 
   @Post('verify-code')
-  verifyCode(@Body() { code, email }: any) {
+  async verifyCode(@Body() { email, code }: { email: string; code: number }) {
     return this.adminService.verifyToken(email, code);
   }
 
