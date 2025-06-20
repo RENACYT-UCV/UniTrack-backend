@@ -209,7 +209,7 @@ export class UsersService {
     try {
       await this.mailService.sendMail(correo, subject, text, html);
       return {
-        message: 'Código de restablecimiento enviado a su correo.' + code,
+        message: `Código de restablecimiento enviado a su correo. ${code}`,
       };
     } catch (error) {
       console.error('Error al enviar correo de restablecimiento:', error);
@@ -217,9 +217,27 @@ export class UsersService {
     }
   }
 
-  async verifyToken(code: number) {
-    return { message: 'Token válido' };
+  async verifyToken(email: string, code: number) {
+    const storedCode = this.passwordResetCodes.get(email);
+    if (!storedCode) {
+      return { error: 'Código no encontrado o expirado.' };
+    }
+
+    if (new Date() > storedCode.expiry) {
+      this.passwordResetCodes.delete(email);
+      return { error: 'Código expirado.' };
+    }
+
+    // compare the provided code with the stored code
+    if (storedCode.code !== code.toString()) {
+      return { error: 'Código inválido.' };
+    }
+    // If the code is valid, return a success message
+    this.passwordResetCodes.delete(email);
+
+    return { message: 'Código verificado correctamente.' };
   }
+
   async resetPassword(
     resetPasswordDto: ResetPasswordDto,
   ): Promise<{ message?: string; error?: string }> {

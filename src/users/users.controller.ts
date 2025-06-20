@@ -32,16 +32,16 @@ export class UsersController {
   }
 
   @Post('verify-code')
-verifyCode(@Body('code') code: number) {
-  return this.usersService.verifyToken(code);
-}
+  verifyCode(@Body() { code, email }: any) {
+    return this.usersService.verifyToken(email, code);
+  }
 
   @Post('reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.usersService.resetPassword(resetPasswordDto);
   }
 
-  @Get()
+  @Get('')
   async findAll() {
     return this.usersService.findAll();
   }
