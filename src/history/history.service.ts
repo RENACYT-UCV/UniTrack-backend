@@ -85,6 +85,34 @@ export class HistoryService {
         'u.apellidos',
         'u.correo',
       ])
+      .where('h.modo = :modo', { modo: 'Ingreso' })
+      .getRawMany();
+
+    return rows.map((row) => ({
+      id: row.h_idHistorial,
+      nombres: row.u_nombres,
+      apellidos: row.u_apellidos,
+      correo: row.u_correo,
+      fecha: row.h_fecha,
+      hora: row.h_hora,
+      modo: row.h_modo,
+    }));
+  }
+
+  async findSalidas(): Promise<HistoryEntryDto[]> {
+    const rows = await this.historyRepository
+      .createQueryBuilder('h')
+      .innerJoin('h.usuario', 'u')
+      .select([
+        'h.idHistorial',
+        'h.fecha',
+        'h.hora',
+        'h.modo',
+        'u.nombres',
+        'u.apellidos',
+        'u.correo',
+      ])
+      .where('h.modo = :modo', { modo: 'Salida' })
       .getRawMany();
 
     return rows.map((row) => ({
