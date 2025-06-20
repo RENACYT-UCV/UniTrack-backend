@@ -14,8 +14,7 @@ export class AuthGuard implements CanActivate {
   private publicRoutes = [
     { path: '/users/login', method: 'POST' },
     { path: '/users', method: 'POST' },
-    { path: '/users/forgot-password', method: 'POST' },
-    { path: '/users/reset-password', method: 'POST' },
+
     { path: '/qr/usuario-por-qr', method: 'POST' },
     { path: '/qr/latest-qr-type', method: 'POST' },
     { path: '/qr/generar', method: 'GET' },

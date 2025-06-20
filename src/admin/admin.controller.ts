@@ -15,8 +15,8 @@ import { Admin } from './entities/admin.entity';
 
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { ResetPasswordDto } from 'src/users/dto/reset-password.dto';
-import { ForgotPasswordDto } from 'src/users/dto/forgot-password.dto';
+import { AdminResetPasswordDto } from './dto/admin-reset-password.dto';
+import { AdminForgotPasswordDto } from './dto/admin-forgot-password.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -54,7 +54,7 @@ export class AdminController {
   }
 
   @Post('forgot-password')
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+  async forgotPassword(@Body() forgotPasswordDto: AdminForgotPasswordDto) {
     return this.adminService.forgotPassword(forgotPasswordDto);
   }
 
@@ -64,7 +64,7 @@ export class AdminController {
   }
 
   @Post('reset-password')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(@Body() resetPasswordDto: AdminResetPasswordDto) {
     return this.adminService.resetPassword(resetPasswordDto);
   }
 }

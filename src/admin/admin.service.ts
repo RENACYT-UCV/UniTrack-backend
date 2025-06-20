@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Admin } from './entities/admin.entity';
@@ -8,8 +12,8 @@ import { QueryFailedError } from 'typeorm';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { ResetPasswordDto } from 'src/users/dto/reset-password.dto';
-import { ForgotPasswordDto } from 'src/users/dto/forgot-password.dto';
+import { AdminResetPasswordDto } from './dto/admin-reset-password.dto';
+import { AdminForgotPasswordDto } from './dto/admin-forgot-password.dto';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
@@ -117,7 +121,7 @@ export class AdminService {
   }
 
   async forgotPassword(
-    forgotPasswordDto: ForgotPasswordDto,
+    forgotPasswordDto: AdminForgotPasswordDto,
   ): Promise<{ message?: string; error?: string }> {
     const { correo } = forgotPasswordDto;
     const user = await this.adminRepository.findOne({ where: { correo } });
@@ -171,7 +175,7 @@ export class AdminService {
   }
 
   async resetPassword(
-    resetPasswordDto: ResetPasswordDto,
+    resetPasswordDto: AdminResetPasswordDto,
   ): Promise<{ message?: string; error?: string }> {
     const { correo, code, newPassword } = resetPasswordDto;
     const storedCode = this.passwordResetCodes.get(correo);
@@ -201,8 +205,13 @@ export class AdminService {
       });
       console.log(`Update result:`, updateResult);
       if (updateResult.affected === 0) {
-        console.log(`No rows affected by update for admin ID ${admin.idAdmin}.`);
-        return { error: 'No se pudo actualizar la contraseña. El administrador no fue encontrado o la contraseña ya era la misma.' };
+        console.log(
+          `No rows affected by update for admin ID ${admin.idAdmin}.`,
+        );
+        return {
+          error:
+            'No se pudo actualizar la contraseña. El administrador no fue encontrado o la contraseña ya era la misma.',
+        };
       }
     } catch (updateError) {
       console.error('Error during password update:', updateError);
