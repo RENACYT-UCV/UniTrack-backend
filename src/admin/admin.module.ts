@@ -5,8 +5,9 @@ import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
+import { MailModule } from 'src/mail/mail.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Admin])],
+  imports: [TypeOrmModule.forFeature([Admin]), MailModule],
   controllers: [AdminController],
   providers: [AdminService, JwtService],
   exports: [AdminService],
